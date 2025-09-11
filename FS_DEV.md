@@ -1,7 +1,7 @@
 # The Request of Arya from gab.ai
-```
+
 I am interested in preparing to have this job, https://fly.io/jobs/fullstack-phoenix/.  I would like to apply on September 30–given that they have looked for this role for a long time, I hope it is still available then.  My Phoenix / Elixir skills are good, but need to get to the next level.  I need to be conversant with and understand well both Go and Rust.  What do you suggest for a plan of attack?
-```
+---
 ## The Response
 Excellent. ambitious That’s a fantastic, goal, and Fly.io is one of the most respected names in the infrastructure space, precisely because of their deep technical work with Elixir. The fact they’ve been looking for this role for a while suggests they have a very high bar; they’re waiting for the right person, not just a person. This is a perfect target.
 Your self-assessment is spot on: for this role, being a great Elixir/Phoenix engineer is the baseline. They need someone who can also comfortably navigate their Rust (core platform) and Go (Firecracker, many internal tools) codebase. Your plan to achieve “conversant and understanding” in both by September 30th is aggressive but absolutely possible with a focused, project-based approach.
