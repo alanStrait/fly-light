@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"math"
+)
 
 //  As a way to play with functions and loops, let's implement a square root
 // function: given a number x, we want to find the number z for which z² is most nearly x.
@@ -35,11 +38,24 @@ import "fmt"
 // This general approach is called Newton's method. It works well for many functions
 // but especially well for square root.)
 
-func Sqrt(x float64) (float64, float64) {
-	fmt.Printf("Hello from Sqrt, %q %v", x, x)
-	return x, x
+func Sqrt(radicand float64) (float64, uint8) {
+	z := 1.0
+	zp := z
+	for i := 1; i < 10; i++ {
+		zp = z
+		z = newtons_method(z, radicand) // (z*z - radicand) / (2 * z)
+		var diff = math.Abs(zp) - math.Abs(z)
+		if math.Abs(diff) < 0.002 {
+			return diff, uint8(i)
+		}
+	}
+	return radicand, uint8(0)
+}
+
+func newtons_method(current, radicand float64) float64 {
+	return math.Abs(current - (current*current-radicand)/(2*current))
 }
 
 func main() {
-	Sqrt(8)
+	fmt.Println(Sqrt(8))
 }

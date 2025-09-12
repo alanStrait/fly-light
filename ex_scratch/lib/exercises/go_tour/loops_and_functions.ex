@@ -35,7 +35,22 @@ defmodule Exercises.GoTour.LoopsAndFunctions do
   but especially well for square root.)
   """
 
-  def sqrt(value) do
-    IO.puts("Welcome to LoopsAndFunctions.sqrt(#{value})")
+  def sqrt(radicand) do
+    Enum.reduce_while(1..10, {1, 1}, fn i, acc ->
+      {prior, current} = acc
+      current = newtons_method(current, radicand)
+      diff = abs(prior - current)
+      prior = current
+
+      if diff < 0.002 do
+        {:halt, {diff, i}}
+      else
+        {:cont, {prior, current}}
+      end
+    end)
+  end
+
+  def newtons_method(current, radicand) do
+    abs(current - (current * current - radicand) / (2 * current))
   end
 end
