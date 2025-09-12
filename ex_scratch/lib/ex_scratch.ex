@@ -1,6 +1,6 @@
 defmodule ExScratch do
   @moduledoc """
-  Documentation for `ExScratch`.
+  `ExScratch` provides a context for trying things out.
   """
 
   @doc """

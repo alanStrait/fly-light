@@ -1,6 +1,7 @@
 # Go Notes
 - [Installing Go](https://go.dev/doc/install/)
 - [Go Documentation](https://go.dev/doc/)
+- [A Tour of Go](https://go.dev/tour)
 - [How to Write Go Code](https://go.dev/doc/)
 - [Package reference for standard library](https://go.dev/pkg/)
   - [Language Spec](https://go.dev/ref/spec)

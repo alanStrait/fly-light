@@ -1,21 +1,17 @@
 # ExScratch
 
-**TODO: Add description**
+A plae to create solutions to exercises for the purpose of learning and 
+practicing Elixir.  
 
-## Installation
+## Exercises
+Elixir exercises are found in the `lib/exercises` directory and come from
+two sources: `A Tour of Go`, and `Exercism.com`.  These exercises are intended
+to be run from `iex` and will be listed here as they are created.
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `ex_scratch` to your list of dependencies in `mix.exs`:
-
-```elixir
-def deps do
-  [
-    {:ex_scratch, "~> 0.1.0"}
-  ]
-end
 ```
-
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at <https://hexdocs.pm/ex_scratch>.
-
+iex -S mix
+# Go Tour exercises
+alias Exercises.GoTour
+# Loops and functions.  
+GoTour.loops_and_functions()
+```
