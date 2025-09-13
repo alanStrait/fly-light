@@ -33,4 +33,7 @@ Use `bin/go-exercise-runner.sh` to run exercises.  Exercises will be listed here
 # From `go-scratch` root directory.
 # Loops and functions
 bash bin/go-exercise-runner.sh go_tour/loops_and_functions
+# Slices
+bash bin/go-exercise-runner.sh go_tour/slices
+
 ```
