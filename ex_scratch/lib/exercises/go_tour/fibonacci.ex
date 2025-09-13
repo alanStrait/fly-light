@@ -9,17 +9,44 @@ defmodule Exercises.GoTour.Fibonacci do
   This implementation is different than the Go implementation in that
   it returns the value for a specific position in the Fibonacci sequence,
   where the Go function lists the Fibonacci sequence for a sequence of 10.
+
+  Fibonacci has been enhanced to keep a map of computed values by way of `Agent`,
+  providing for a simple cache because we do allow requests for arbitrary
+  Fibonacci values.
   """
+  use Agent
 
-  def fibonacci(0), do: value(0)
-  def fibonacci(1), do: value(1)
-  def fibonacci(2), do: value(1)
-
-  def fibonacci(position) when position >= 2 do
-    value(position - 1) + value(position - 2)
+  def start_link(_state) do
+    Agent.start_link(fn -> %{0 => 0, 1 => 1} end, name: __MODULE__)
   end
 
-  defp value(0), do: 0
-  defp value(1), do: 1
-  defp value(n), do: value(n - 1) + value(n - 2)
+  def calculate(0), do: calculate_uncached(0)
+  def calculate(1), do: calculate_uncached(1)
+  def calculate(2), do: calculate_uncached(1)
+
+  def calculate(position) when position >= 2 do
+    case Agent.get(__MODULE__, &Map.get(&1, position)) do
+      nil ->
+        result = calculate_uncached(position)
+        Agent.update(__MODULE__, &Map.put(&1, position, result))
+        result
+
+      cached_result ->
+        cached_result
+    end
+
+    # calculate_uncached(position - 1) + calculate_uncached(position - 2)
+  end
+
+  defp calculate_uncached(0), do: 0
+  defp calculate_uncached(1), do: 1
+  defp calculate_uncached(n), do: calculate_uncached(n - 1) + calculate_uncached(n - 2)
+
+  def cache_size do
+    Agent.get(__MODULE__, &map_size/1)
+  end
+
+  def clear_cache do
+    Agent.update(__MODULE__, fn _ -> %{0 => 0, 1 => 1} end)
+  end
 end

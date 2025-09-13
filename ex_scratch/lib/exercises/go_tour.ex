@@ -29,6 +29,6 @@ defmodule Exercises.GoTour do
   """
   def fibonacci(position) do
     IO.puts("pos #{position}")
-    Fibonacci.fibonacci(position)
+    Fibonacci.calculate(position)
   end
 end
