@@ -5,7 +5,13 @@ defmodule Exercises.GoTour do
   Go solutions in the `go-scratch/exercises/go_tour/` modules.
   """
   alias Exercises.GoTour.{
-    LoopsAndFunctions, Slices, Fibonacci, Stringers, MyErrors
+    LoopsAndFunctions,
+    Slices,
+    Fibonacci,
+    Stringers,
+    MyErrors,
+    Readers,
+    Rot13Reader
   }
 
   @doc """
@@ -55,5 +61,22 @@ defmodule Exercises.GoTour do
   def my_errors(radicand) do
     {:ok, value} = MyErrors.sqrt(radicand)
     IO.puts("sqrt is #{inspect value}")
+  end
+
+  @doc """
+  readers streams an infinite list of 'A' characters.
+  """
+  def readers() do
+    Readers.stream()
+    |> Stream.each(&IO.write/1)
+    |> Stream.run()
+  end
+
+  @doc """
+  rot13 uses the rot13 algorithm to decode a message.
+  """
+  def rot13 do
+    # Usage:
+    Rot13Reader.decode("Lbh penpxrq gur pbqr!")  # => "You cracked the code!"
   end
 end
