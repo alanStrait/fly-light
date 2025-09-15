@@ -17,7 +17,7 @@ package main
 // method such that ErrNegativeSqrt(-2).Error() returns "cannot Sqrt negative number: -2".
 //
 // Note: A call to fmt.Sprint(e) inside the Error method will send the program into an
-// infinite loop. You can avoid this by converting e first: fmt.Sprint(float64(e)). Why?
+// myiinfinite loop. You can avoid this by converting e first: fmt.Sprint(float64(e)). Why?
 //
 // Change your Sqrt function to return an ErrNegativeSqrt value when given a negative number.
 import (
@@ -42,7 +42,7 @@ func Sqrt(radicand float64) (float64, error) {
 		z = newtons_method(z, radicand) // (z*z - radicand) / (2 * z)
 		var diff = math.Abs(zp) - math.Abs(z)
 		if math.Abs(diff) < 0.002 {
-			return diff, nil
+			return z, nil
 		}
 	}
 	return radicand, nil
@@ -53,6 +53,6 @@ func newtons_method(current, radicand float64) float64 {
 }
 
 func main() {
-	fmt.Println(Sqrt(8))
-	fmt.Println(Sqrt(-8))
+	fmt.Println(Sqrt(2))
+	fmt.Println(Sqrt(-2))
 }
