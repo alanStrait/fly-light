@@ -11,7 +11,9 @@ defmodule Exercises.GoTour do
     Stringers,
     MyErrors,
     Readers,
-    Rot13Reader
+    Rot13Reader,
+    TreeStream,
+    WebCrawler
   }
 
   @doc """
@@ -78,5 +80,49 @@ defmodule Exercises.GoTour do
   def rot13 do
     # Usage:
     Rot13Reader.decode("Lbh penpxrq gur pbqr!")  # => "You cracked the code!"
+  end
+
+  @doc """
+  tree_stream is incomplete, complete constructor wanted for creating the desired graph.
+  WANTED: `new(TreeStream)`
+  """
+  def tree_stream do
+    # Create some test trees
+    t1 = %TreeStream.Tree{
+      value: 2,
+      left: %TreeStream.Tree{value: 1},
+      right: %TreeStream.Tree{value: 3}
+    }
+
+    t2 = %TreeStream.Tree{
+      value: 2,
+      left: %TreeStream.Tree{value: 1},
+      right: %TreeStream.Tree{value: 3}
+    }
+
+    t3 = %TreeStream.Tree{
+      value: 2,
+      left: %TreeStream.Tree{value: 1},
+      right: %TreeStream.Tree{value: 4}  # Different value
+    }
+
+    IO.puts("true? #{inspect TreeStream.same(t1, t2)}")  # true
+    IO.puts("false? #{inspect TreeStream.same(t1, t3)}")  # false
+  end
+
+  @doc """
+  tree_stream_new WIP
+  WANTED: Refine how tree is composed.
+  """
+  def tree_stream_new do
+    TreeStream.non_repeating_values(10) |> IO.inspect(label: "\nTREE\n")
+  end
+
+  @doc """
+  web_crawler is an exactly once per page web crawler.
+  """
+  def web_crawler do
+    # WebCrawler.list_sites()
+    WebCrawler.crawl()
   end
 end

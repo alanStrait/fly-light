@@ -5,21 +5,25 @@ package main
 //
 // TODO: As with the Elixir version, call recursively until the specific
 // value at a particular position can be reported.
-import "fmt"
+import (
+	"fmt"
+)
 
-func fibonacci() func() int {
-	a, b := 0, 1
-	return func() int {
-		result := a
-		a, b = b, a+b
-		return result
+func fibonacci(n int, c chan int) {
+	x, y := 0, 1
+	for i := 0; i <= n; i++ {
+		if i == n {
+			c <- x
+		}
+		x, y = y, x+y
 	}
-
+	close(c)
 }
 
 func main() {
-	f := fibonacci()
-	for i := 0; i < 10; i++ {
-		fmt.Println(f())
+	c := make(chan int, 40)
+	go fibonacci(cap(c), c)
+	for i := range c {
+		fmt.Println(i)
 	}
 }

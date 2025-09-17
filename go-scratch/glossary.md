@@ -1,0 +1,29 @@
+# Go Glossary
+
+- Array
+  - Does not require make
+  - Is fixed sized, `arr := [5]int{}`]
+- buffered channel
+  - A channel with a limit or capacity, reporte by cap(ch)
+- channel
+  - `<-`
+  - The direction that data flows for a go routine?
+- make 
+  - Required by `channels`, `slices`, and `maps`.
+  - References types that require initialization.
+- map
+  - key-value dictionaries
+  - Can be given capacity when `make(map[string]int, 10)` has capacity 10
+- select
+  - `select` statements lets a `goroutine` wait on multiple communication operations.
+  - Blocks until one of its cases can run, 
+    - then it executes that case. 
+    - Chooses at random if more than one ready to run.
+    - Runs `default` case in a select is run if no other case is ready.
+- slices
+  - Dynamically-sized arrays that can be mutated
+  - Can be given capacity on `make(s, 10)`, has capacity 10
+- Struct
+  - `type Point struct { X, Y int }`
+  - `p := Point{1, 2}`
+- 
