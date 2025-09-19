@@ -1,13 +1,40 @@
 # Go Glossary
 
+## Important Concepts for fly.io
+- [x] Tour of Go, focus areas
+  - [ ] goroutines
+  - [ ] channels
+  - [ ] context
+  - [ ] interfaces
+  - [ ] standard library
+  - [ ] Project:
+    - [ ] Simple CLI 
+      - [ ] Fetch data from SpaceX, output formatted JSON or text.
+      - [ ] Focus: structs, HTTP, and flags.
+    - [ ] Fly.io Context
+      - [ ] `machined`, skim documentation for, the Go-based agent that runs on Fly machines.
+        - [ ] Get a feel for the code.
+- [ ] Rust
+  - [ ] "Rust Book", through Chapter 9.
+    - [ ] Core concepts: ownership, borrowing, lifetimes, error handling.
+  - [ ] Setup `rust-analyzer` in VS Code.
+  - [ ] Fly.io Context, from github repositories:
+    - [ ] `fly-proxy`, Rust proxy that handles your app's traffic.
+    - [ ] `loco`, runtime coordinator.
+    - [ ] `Cargo.toml` to see what crates are used.
+
+## Glossary
 - Array
   - Does not require make
   - Is fixed sized, `arr := [5]int{}`]
-- buffered channel
+- Buffered channel
   - A channel with a limit or capacity, reporte by cap(ch)
-- channel
+- Channel
   - `<-`
   - The direction that data flows for a go routine?
+- Context
+- Goroutine
+- Interface
 - make 
   - Required by `channels`, `slices`, and `maps`.
   - References types that require initialization.
@@ -23,6 +50,7 @@
 - slices
   - Dynamically-sized arrays that can be mutated
   - Can be given capacity on `make(s, 10)`, has capacity 10
+- Standard Library
 - Struct
   - `type Point struct { X, Y int }`
   - `p := Point{1, 2}`

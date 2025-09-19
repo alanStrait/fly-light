@@ -1,0 +1,36 @@
+﻿original,code,location,status
+"AMS - Amsterdam, NetherlandsOperational",AMS ," Amsterdam, Netherlands",Operational
+"ARN - Stockholm, SwedenOperational",ARN ," Stockholm, Sweden",Operational
+"ATL - Atlanta, Georgia (US)Operational",ATL ," Atlanta, Georgia (US)",Operational
+"BOG - Bogotá, ColombiaOperational",BOG ," Bogotá, Colombia",Operational
+"BOM - Mumbai, IndiaDegraded Performance",BOM ," Mumbai, India",Degraded Performance
+"CDG - Paris, FranceOperational",CDG ," Paris, France",Operational
+"DEN - Denver, Colorado (US)Operational",DEN ," Denver, Colorado (US)",Operational
+"DFW - Dallas, Texas (US)Operational",DFW ," Dallas, Texas (US)",Operational
+"EWR - Secaucus, NJ (US)Operational",EWR ," Secaucus, NJ (US)",Operational
+"EZE - Ezeiza, ArgentinaOperational",EZE ," Ezeiza, Argentina",Operational
+"FRA - Frankfurt, GermanyOperational",FRA ," Frankfurt, Germany",Operational
+"GDL - Guadalajara, MexicoOperational",GDL ," Guadalajara, Mexico",Operational
+"GIG - Rio de Janeiro, BrazilOperational",GIG ," Rio de Janeiro, Brazil",Operational
+"GRU - Sao Paulo, BrazilOperational",GRU ," Sao Paulo, Brazil",Operational
+HKG - Hong KongOperational,HKG , Hong KongOperational,Operational
+"IAD - Ashburn, Virginia (US)Operational",IAD ," Ashburn, Virginia (US)",Operational
+"JNB - Johannesburg, South AfricaOperational",JNB ," Johannesburg, South Africa",Operational
+"LAX - Los Angeles, California (US)Operational",LAX ," Los Angeles, California (US)",Operational
+"LHR - London, United KingdomOperational",LHR ," London, United Kingdom",Operational
+"MAD - Madrid, SpainOperational",MAD ," Madrid, Spain",Operational
+"MEL - Melbourne, AustraliaOperational",MEL ," Melbourne, Australia",Operational
+"MIA - Miami, Florida (US)Operational",MIA ," Miami, Florida (US)",Operational
+"NRT - Tokyo, JapanOperational",NRT ," Tokyo, Japan",Operational
+"ORD - Chicago, Illinois (US)Operational",ORD ," Chicago, Illinois (US)",Operational
+"OTP - Bucharest, RomaniaOperational",OTP ," Bucharest, Romania",Operational
+"PHX - Phoenix, Arizona (US)Operational",PHX ," Phoenix, Arizona (US)",Operational
+"QRO - Querétaro, MexicoOperational",QRO ," Querétaro, Mexico",Operational
+"SCL - Santiago, ChileOperational",SCL ," Santiago, Chile",Operational
+"SEA - Seattle, Washington (US)Operational",SEA ," Seattle, Washington (US)",Operational
+SIN - SingaporeOperational,SIN , SingaporeOperational,Operational
+"SJC - San Jose, California (US)Operational",SJC ," San Jose, California (US)",Operational
+"SYD - Sydney, AustraliaOperational",SYD ," Sydney, Australia",Operational
+"WAW - Warsaw, PolandOperational",WAW ," Warsaw, Poland",Operational
+"YUL - Montréal, CanadaOperational",YUL ," Montréal, Canada",Operational
+"YYZ - Toronto, CanadaOperationa",YYZ ," Toronto, CanadaOperationa",Operational

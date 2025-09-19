@@ -13,6 +13,8 @@ The Overarching Principle: Learn by Building, Not Just Reading
 
 Your goal isn’t to become a senior Rust/Go developer. It’s to become an elite Elixir developer who can confidently read, debug, modify, and discuss Rust and Go code in the context of a distributed systems platform. Context is everything.
 
+![Fly Stack Diagram](./images/flylight.png)
+
 The 3.5-Week “Fly.io Readiness” Plan
 Week 1: Foundation & Immersion (Sept 8-14)
 
@@ -24,6 +26,7 @@ Week 1: Foundation & Immersion (Sept 8-14)
         - [ ] Tutorial: Complete the “Rust Book” up through Chapter 9 (Error Handling). This is non-negotiable. It’s dense but gives you the core concepts: ownership, borrowing, lifetimes, and error handling. These are the mental hurdles.
         - [ ] Tooling: Get rust-analyzer set up in your editor. It’s a lifesaver.
         - [ ] Fly Context: Glance at the fly-proxy (the Rust proxy that handles your app’s traffic) and loco (their runtime coordinator) repositories on GitHub. Again, just look at the structure and Cargo.toml files to see what crates they use.
+![Flylight Project](./images/flylight_project.png)
 
 Week 2: Project-Based Integration (Sept 15-21)
 
