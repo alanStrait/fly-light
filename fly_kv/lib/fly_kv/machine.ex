@@ -61,8 +61,8 @@ defmodule FlyKv.Machine do
           tls_config_ca_path: tls_config_ca_path, tls_config_ca_file: tls_config_ca_file,
           tls_config_cert_file: tls_config_cert_file, tls_config_key_file: tls_config_key_file,
           tls_config_insecure_skip_verify: tls_config_insecure_skip_verify,
-          memory_total: memory_total, memory_allocated: memory_allocated,
-          cores_total: cores_total, cores_allocated: cores_allocated, status: status
+          memory_total: String.to_integer(memory_total), memory_allocated: String.to_integer(memory_allocated),
+          cores_total: String.to_integer(cores_total), cores_allocated: String.to_integer(cores_allocated), status: status
         }
       end)
       |> Enum.map(&struct(__MODULE__, &1))

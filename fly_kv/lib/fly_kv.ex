@@ -28,4 +28,8 @@ defmodule FlyKv do
   def machine_for(region_code, machine_key) do
     Store.machine_for_region(region_code, machine_key)
   end
+
+  def machine_request(region_code, memory_needed, cores_needed) do
+    Store.machine_request(region_code, memory_needed, cores_needed)
+  end
 end
