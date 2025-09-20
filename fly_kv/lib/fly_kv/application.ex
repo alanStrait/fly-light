@@ -14,7 +14,8 @@ defmodule FlyKv.Application do
       # Start a worker by calling: FlyKv.Worker.start_link(arg)
       # {FlyKv.Worker, arg},
       # Start to serve requests, typically the last entry
-      FlyKvWeb.Endpoint
+      FlyKvWeb.Endpoint,
+      FlyKv.Store
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

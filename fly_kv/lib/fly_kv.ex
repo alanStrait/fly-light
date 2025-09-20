@@ -6,25 +6,26 @@ defmodule FlyKv do
 
   All key-value data access should go through this context module.
   """
+  alias FlyKv.Store
 
   @doc """
   list_regions returns all regions.
   """
   def list_regions do
-    []
+    Store.list_regions()
   end
 
   @doc """
   machines_for returns all machines for this region.
   """
-  def machines_for(region_id) do
-    ""
+  def machines_for(region_code) do
+    Store.machines_for_region(region_code)
   end
 
   @doc """
   machine_for returns one specific machine.
   """
-  def machine_for(region_id, machine_id) do
-    ""
+  def machine_for(region_code, machine_key) do
+    Store.machine_for_region(region_code, machine_key)
   end
 end

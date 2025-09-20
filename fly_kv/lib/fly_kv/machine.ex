@@ -34,9 +34,9 @@ defmodule FlyKv.Machine do
 
   NimbleCSV.define(MachineParser, separator: ",")
 
-  @machine_data_file Path.join(File.cwd!(), "priv/data/machine.csv")
+  @data_path Application.compile_env(:fly_kv, __MODULE__)[:data_path]
+  @machine_data_file Path.join(File.cwd!(), @data_path)
   def read_machine_data do
-    _csv_data =
       @machine_data_file
       |> File.stream!
       |> MachineParser.parse_stream()
@@ -53,7 +53,10 @@ defmodule FlyKv.Machine do
         }
       end)
       |> Enum.map(&struct(__MODULE__, &1))
-      |> Enum.into([])
+      |> Enum.group_by(&(&1.region_code), &(&1))
+      |> Map.new(fn {region, items} ->
+          {region, Map.new(items, fn item -> {key(item), item} end)}
+      end)
   end
 
   def key(%__MODULE__{} = machine) do

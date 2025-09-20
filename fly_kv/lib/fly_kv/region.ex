@@ -9,6 +9,9 @@ defmodule FlyKv.Region do
 
   NimbleCSV.define(RegionParser, separator: ",", escape: "\"")
 
+  @doc """
+  new is primarily used for testing while data is read in from a file.
+  """
   def new(%{code: code, location: location, status: status}) do
     %FlyKv.Region{
       code: code,
@@ -17,7 +20,12 @@ defmodule FlyKv.Region do
     }
   end
 
-  @region_data_file Path.join(File.cwd!(), "priv/data/fly_io_regions.csv")
+  @data_path Application.compile_env(:fly_kv, __MODULE__)[:data_path]
+  @region_data_file Path.join(File.cwd!(), @data_path)
+
+  @doc """
+  read_region_data returns a map of `Region` types keyed by `key/1`.
+  """
   def read_region_data do
     @region_data_file
     |> File.stream!
@@ -28,8 +36,14 @@ defmodule FlyKv.Region do
       }
     end)
     |> Enum.map(&struct(__MODULE__, &1))
+    |> Enum.into(%{}, fn region ->
+      {__MODULE__.key(region), region}
+    end)
   end
 
+  @doc """
+  key returns `Region` code to be used as the key.
+  """
   @spec key(__MODULE__.t()) :: binary()
   def key(%__MODULE__{} = region) do
     region.code
