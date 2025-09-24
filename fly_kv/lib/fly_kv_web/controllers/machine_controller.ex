@@ -14,9 +14,9 @@ defmodule FlyKvWeb.MachineController do
   end
 
   # GET /fly-kv/regions/:region_code/machines/:id
-  def show(conn, %{"region_code" => region_code, "id" => machine_id}) do
+  def show(conn, %{"region_code" => region_code, "id" => machine_address}) do
     # Fetch a specific machine
-    machine = FlyKv.machine_for(region_code, machine_id)
+    machine = FlyKv.machine_for(region_code, machine_address)
 
     conn
     |> render(:show, %{machine: machine, region_code: region_code})

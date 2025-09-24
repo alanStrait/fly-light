@@ -25,8 +25,8 @@ defmodule FlyKv do
   @doc """
   machine_for returns one specific machine.
   """
-  def machine_for(region_code, machine_key) do
-    Store.machine_for_region(region_code, machine_key)
+  def machine_for(region_code, machine_address) do
+    Store.machine_for_region(region_code, machine_address)
   end
 
   @doc """

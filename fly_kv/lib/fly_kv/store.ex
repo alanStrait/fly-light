@@ -67,11 +67,11 @@ defmodule FlyKv.Store do
   end
 
   @impl true
-  def handle_call({:machine_for_region, region_code, machine_key}, _from, state) do
+  def handle_call({:machine_for_region, region_code, machine_address}, _from, state) do
     machine =
       state.machines
       |> Map.get(region_code)
-      |> Map.get(region_code <> "::" <> machine_key)
+      |> Map.get(region_code <> "::" <> machine_address)
       |> Map.from_struct()
 
     {:reply, machine, state}
