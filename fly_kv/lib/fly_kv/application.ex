@@ -15,6 +15,7 @@ defmodule FlyKv.Application do
       # {FlyKv.Worker, arg},
       # Start to serve requests, typically the last entry
       FlyKvWeb.Endpoint,
+      # Add GenServer to supervision tree
       FlyKv.Store
     ]
 

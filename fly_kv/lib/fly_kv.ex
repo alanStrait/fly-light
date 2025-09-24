@@ -1,8 +1,8 @@
 defmodule FlyKv do
   @moduledoc """
   FlyKv provides the context for interacting with a local, in-memory
-  key value store that manages status of machines known to Flylight
-  by region.
+  key-value store that manages by region the status of machines known
+  to Flylight.
 
   All key-value data access should go through this context module.
   """
@@ -29,10 +29,14 @@ defmodule FlyKv do
     Store.machine_for_region(region_code, machine_key)
   end
 
+  @doc """
+  machine_request will allocate a VM from a battery of servers known
+  to a given region.
+  """
   def machine_request(region_code, memory_needed, cores_needed) do
     case Store.machine_request(region_code, memory_needed, cores_needed) do
       nil ->
-        {:error, "Machine not found"}
+        {:error, "Unable to allocate VM for #{region_code}"}
 
       machine ->
         {:ok, machine}

@@ -6,7 +6,7 @@ defmodule FlyKv.Store do
 
   alias FlyKv.{Region, Machine}
 
-  # Client
+  # Client API
 
   def start_link(default) do
     GenServer.start_link(__MODULE__, default, name: __MODULE__)
@@ -71,7 +71,8 @@ defmodule FlyKv.Store do
     machine =
       state.machines
       |> Map.get(region_code)
-      |> Map.get(machine_key)
+      |> Map.get(region_code <> "::" <> machine_key)
+      |> Map.from_struct()
 
     {:reply, machine, state}
   end
@@ -87,7 +88,7 @@ defmodule FlyKv.Store do
         machine.memory_total - machine.memory_allocated > memory_needed &&
           machine.cores_total - machine.cores_allocated > cores_needed
       end)
-      # ordered randomly
+      # choose random server
       |> Enum.shuffle()
       # allocate first match
       |> List.first()

@@ -13,7 +13,7 @@ defmodule FlyKv.Region do
   new is primarily used for testing while data is read in from a file.
   """
   def new(%{code: code, location: location, status: status}) do
-    %FlyKv.Region{
+    %__MODULE__{
       code: code,
       location: location,
       status: status
