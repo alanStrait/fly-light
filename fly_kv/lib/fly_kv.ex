@@ -30,6 +30,12 @@ defmodule FlyKv do
   end
 
   def machine_request(region_code, memory_needed, cores_needed) do
-    Store.machine_request(region_code, memory_needed, cores_needed)
+    case Store.machine_request(region_code, memory_needed, cores_needed) do
+      nil ->
+        {:error, "Machine not found"}
+
+      machine ->
+        {:ok, machine}
+    end
   end
 end

@@ -18,9 +18,9 @@ defmodule FlyKvWeb.Router do
     # This creates nested routes for machines under a region
     # GET /fly-kv/regions/:region_code/machines
     # GET /fly-kv/regions/:region_code/machines/:id
-    # POST /fly-kv/regions/:region_code/machines
-    # PATCH /fly-kv/regions/:region_code/machines/:id
-    resources "/regions/:region_code/machines", MachineController, only: [:index, :show, :create, :update]
+    resources "/regions/:region_code/machines", MachineController, only: [:index, :show]
+    # POST ask for VM, given memory and cores desired, for a region
+    post "/regions/:region_code/allocate", RegionController, :allocate
 
     # I've reinterpreted this as a metric endpoint for a region.
     # PUT /fly-kv/regions/:region_code/metrics

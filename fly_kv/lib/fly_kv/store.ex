@@ -12,21 +12,38 @@ defmodule FlyKv.Store do
     GenServer.start_link(__MODULE__, default, name: __MODULE__)
   end
 
+  @doc """
+  list_regions returns a list of all `Region`s in which flylight has
+  co-located servers for use by customers.
+  """
   @spec list_regions :: list(Region.t())
   def list_regions() do
     GenServer.call(__MODULE__, :list_regions)
   end
 
+  @doc """
+  machines_for_region returns a list of machines and their state for
+  a given region_code.
+  """
   @spec machines_for_region(binary) :: list(Machine.t())
   def machines_for_region(region_code) do
     GenServer.call(__MODULE__, {:machines_for_region, region_code})
   end
 
+  @doc """
+  machine_for_region returns the details known about a machine
+  identified by `region_code` and `machine_key`.
+  """
   @spec machine_for_region(binary(), binary()) :: Machine.t()
   def machine_for_region(region_code, machine_key) do
     GenServer.call(__MODULE__, {:machine_for_region, region_code, machine_key})
   end
 
+  @doc """
+  machine_request asks for a VM to be allocated according to provided
+  parameters: region_code, memory_needed, and cores_needed.  If space allows
+  the machine is provisioned and returned in this synchronous request.
+  """
   @spec machine_request(binary(), integer(), integer()) :: Machine.t()
   def machine_request(region_code, memory_needed, cores_needed) do
     GenServer.call(__MODULE__, {:machine_request, region_code, memory_needed, cores_needed})
@@ -62,28 +79,38 @@ defmodule FlyKv.Store do
   @impl true
   def handle_call({:machine_request, region_code, memory_needed, cores_needed}, _from, state) do
     # machines for regions
-    {key, machine} =
+    machine_kv =
       state.machines
       |> Map.get(region_code, %{})
       # filter candidates
       |> Enum.filter(fn {_key, machine} ->
-        ((machine.memory_total - machine.memory_allocated) > memory_needed) &&
-        ((machine.cores_total - machine.cores_allocated) > cores_needed)
+        machine.memory_total - machine.memory_allocated > memory_needed &&
+          machine.cores_total - machine.cores_allocated > cores_needed
       end)
       # ordered randomly
       |> Enum.shuffle()
       # allocate first match
-      |> List.first() || nil
+      |> List.first()
 
-    machine_prime = %Machine{
-      machine |
-      memory_allocated: machine.memory_allocated + memory_needed,
-      cores_allocated: machine.cores_allocated + cores_needed
-    }
+    {machine, state} =
+      if machine_kv == nil do
+        {nil, state}
+      else
+        {key, machine} = machine_kv
 
-    state = put_machine(state, region_code, key, machine_prime)
+        machine_prime = %Machine{
+          machine
+          | memory_allocated: machine.memory_allocated + memory_needed,
+            cores_allocated: machine.cores_allocated + cores_needed
+        }
 
-    {:reply, machine_prime, state}
+        state = put_machine(state, region_code, key, machine_prime)
+
+        {machine_prime, state}
+      end
+
+
+    {:reply, machine, state}
   end
 
   @impl true
@@ -101,7 +128,7 @@ defmodule FlyKv.Store do
     update_in(
       state,
       [:machines, region_code, machine_key],
-      fn _machine -> machine
-    end)
+      fn _machine -> machine end
+    )
   end
 end
