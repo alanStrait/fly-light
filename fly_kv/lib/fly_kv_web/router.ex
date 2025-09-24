@@ -16,15 +16,15 @@ defmodule FlyKvWeb.Router do
     get "/regions", RegionController, :index
 
     # This creates nested routes for machines under a region
-    # GET /fly-kv/regions/:region_id/machines
-    # GET /fly-kv/regions/:region_id/machines/:id
-    # POST /fly-kv/regions/:region_id/machines
-    # PATCH /fly-kv/regions/:region_id/machines/:id
-    resources "/regions/:region_id/machines", MachineController, only: [:index, :show, :create, :update]
+    # GET /fly-kv/regions/:region_code/machines
+    # GET /fly-kv/regions/:region_code/machines/:id
+    # POST /fly-kv/regions/:region_code/machines
+    # PATCH /fly-kv/regions/:region_code/machines/:id
+    resources "/regions/:region_code/machines", MachineController, only: [:index, :show, :create, :update]
 
     # I've reinterpreted this as a metric endpoint for a region.
-    # PUT /fly-kv/regions/:region_id/metrics
-    put "/regions/:region_id/metrics", RegionController, :update_metrics
+    # PUT /fly-kv/regions/:region_code/metrics
+    put "/regions/:region_code/metrics", RegionController, :update_metrics
   end
 
 
