@@ -1,0 +1,63 @@
+<!-- lib/fly_dash_web/live/dashboard_live.html.heex -->
+<div class="min-h-screen bg-[#0A0B10] text-[#E6E6E6]">
+  <!-- Header -->
+  <header class="bg-[#1A1B23] border-b border-[#2D2E36] p-4">
+    <h1 class="text-2xl font-bold text-[#8B5CF6]">Fly Dash</h1>
+  </header>
+
+  <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 p-6">
+    <!-- Regions Sidebar -->
+    <div class="lg:col-span-1">
+      <div class="bg-[#1A1B23] rounded-lg border border-[#2D2E36] p-4">
+        <h2 class="text-lg font-semibold text-[#8B5CF6] mb-4">Regions</h2>
+        <div :for={region <- @regions} 
+             class={"p-3 mb-2 rounded border border-[#2D2E36] hover:border-[#8B5CF6] cursor-pointer"
+                    if @selected_region && @selected_region["code"] == region["code"], 
+                    do: "border-[#8B5CF6] bg-[#2D2E36]",
+                    else: "border-[#2D2E36]"}
+             phx-click="select_region" 
+             phx-value-region-id={region["code"]}
+        >
+          <div class="flex justify-between items-center">
+            <span class="font-medium"><%= region["code"] %></span>
+            <span class={status_color(region["status"])}><%= region["status"] %></span>
+          </div>
+          <div class="text-sm text-[#A0A0A0]"><%= region["location"] %></div>
+          <div class="text-xs text-[#8B5CF6]"><%= length(region["machines"]) %> machines</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content - Machines View -->
+    <div class="lg:col-span-3">
+      <%= if @selected_region do %>
+        <div class="bg-[#1A1B23] rounded-lg border border-[#2D2E36] p-4">
+          <h2 class="text-xl font-semibold text-[#8B5CF6] mb-4">
+            Machines in <%= @selected_region["code"] %>
+          </h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div :for={machine <- @selected_region["machines"]} 
+                 class="bg-[#252631] p-4 rounded border border-[#2D2E36]">
+              <div class="flex justify-between items-center mb-2">
+                <span class="font-medium"><%= machine["name"] %></span>
+                <span class={machine_status_color(machine["status"])}><%= machine["status"] %></span>
+              </div>
+              <div class="text-sm space-y-1">
+                <div>CPU: <%= machine["cores"] %> cores</div>
+                <div>RAM: <%= machine["memory_gb"] %> GB</div>
+                <%!-- <div class="text-xs text-[#A0A0A0]">Updated: <%= relative_time(machine.updated_at) %></div> --%>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% else %>
+        <!-- Welcome/Empty state -->
+        <div class="bg-[#1A1B23] rounded-lg border border-[#2D2E36] p-8 text-center">
+          <div class="text-[#8B5CF6] text-6xl mb-4">🚀</div>
+          <h2 class="text-xl font-semibold mb-2">Welcome to Fly Dash</h2>
+          <p class="text-[#A0A0A0]">Select a region to view its machines</p>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

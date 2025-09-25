@@ -18,6 +18,8 @@ defmodule FlyDashWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :home
+
+    live "/flylight", DashboardLive
   end
 
   # Other scopes may use custom stacks.
