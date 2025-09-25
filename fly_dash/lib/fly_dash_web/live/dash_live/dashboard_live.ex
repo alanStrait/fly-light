@@ -7,7 +7,7 @@ defmodule FlyDashWeb.DashboardLive do
     if connected?(socket), do: FlyDashWeb.Endpoint.subscribe("machine_updates")
 
     # regions = Regions.list_regions_with_machines()
-    regions = FlyDash.fetch_regions() #|> IO.inspect()
+    regions = FlyDash.fetch_regions()
 
     socket =
       socket

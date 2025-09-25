@@ -11,6 +11,7 @@ defmodule FlyDash do
   def fetch_regions do
     Client.fetch_regions()
     |> Map.get("data")
+    |> Enum.sort(&((length(&1["machines"]) > length(&2["machines"])) ))
   end
 
   def fetch_machines_for(region) do
