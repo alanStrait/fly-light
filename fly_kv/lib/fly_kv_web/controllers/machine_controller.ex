@@ -7,7 +7,7 @@ defmodule FlyKvWeb.MachineController do
     machines =
       region_code
       |> FlyKv.machines_for()
-      |> Enum.map(fn {_key, value} -> Map.from_struct(value) end)
+      |> Enum.map(fn {_key, value} -> value end)
 
     conn
     |> render(:index, %{machines: machines, region_code: region_code})

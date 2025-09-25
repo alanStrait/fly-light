@@ -3,9 +3,7 @@ defmodule FlyKvWeb.RegionController do
 
   # GET /fly-kv/regions
   def index(conn, _params) do
-    regions =
-      FlyKv.list_regions()
-      |> Enum.map(fn {_key, region} -> Map.from_struct(region) end)
+    regions = FlyKv.fetch_regions_with_machines()
 
     conn
     |> render(:index, regions: regions)
@@ -15,11 +13,9 @@ defmodule FlyKvWeb.RegionController do
     # TODO: Validate input values
     memory_gb = ensure_numeric(memory_gb)
     cores = ensure_numeric(cores)
-    IO.inspect("\nALLOCATE memory_gb #{inspect memory_gb} cores #{inspect cores}\n")
     # WIP: refine FlyKv
     case FlyKv.machine_request(region_code, memory_gb, cores) do
       {:ok, machine} ->
-        machine = Map.from_struct(machine)
         render(conn, :machine, machine: machine)
 
       {:error, reason} ->

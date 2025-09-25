@@ -22,6 +22,13 @@ defmodule FlyKv.Store do
   end
 
   @doc """
+  fetch_regions_with_machines provides combined dataset for a single SLA.
+  """
+  def fetch_regions_with_machines() do
+    GenServer.call(__MODULE__, :fetch_regions_with_machines)
+  end
+
+  @doc """
   machines_for_region returns a list of machines and their state for
   a given region_code.
   """
@@ -61,6 +68,20 @@ defmodule FlyKv.Store do
     {:reply, state.regions, state}
   end
 
+  def handle_call(:fetch_regions_with_machines, _from, state) do
+    regions =
+      state.regions
+      |> Enum.map(fn {_key, region} ->
+        machines_p =
+          state.machines
+          |> Map.get(region.code, %{})
+          |> Enum.into([], fn {_k, machine} -> machine end)
+        update_in(region.machines, fn _machines -> machines_p end)
+      end)
+
+    {:reply, regions, state}
+  end
+
   @impl true
   def handle_call({:machines_for_region, region_code}, _from, state) do
     {:reply, Map.get(state.machines, region_code, %{}), state}
@@ -72,7 +93,6 @@ defmodule FlyKv.Store do
       state.machines
       |> Map.get(region_code)
       |> Map.get(region_code <> "::" <> machine_address)
-      |> Map.from_struct()
 
     {:reply, machine, state}
   end
@@ -109,7 +129,6 @@ defmodule FlyKv.Store do
 
         {machine_prime, state}
       end
-
 
     {:reply, machine, state}
   end

@@ -1,7 +1,4 @@
 defmodule FlyKvWeb.RegionJSON do
-  # If you're using Phoenix 1.7+, you'll want to use the embed_templates macro
-  # for function components, but for JSON views we typically define functions directly
-
   alias FlyKvWeb.MachineJSON
 
   # Render a single region
@@ -9,7 +6,8 @@ defmodule FlyKvWeb.RegionJSON do
     %{
       code: region.code,
       location: region.location,
-      status: region.status
+      status: region.status,
+      machines: region.machines
     }
   end
 

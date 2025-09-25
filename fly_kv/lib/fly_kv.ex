@@ -15,6 +15,10 @@ defmodule FlyKv do
     Store.list_regions()
   end
 
+  def fetch_regions_with_machines do
+    Store.fetch_regions_with_machines()
+  end
+
   @doc """
   machines_for returns all machines for this region.
   """
