@@ -32,9 +32,16 @@ defmodule FlyKv do
   @doc """
   machine_request will allocate a VM from a battery of servers known
   to a given region.
+
+  `region_code`: three character code identifying region.
+  `memory_gb`: memory, in gigabytes, being requested
+  `cores`:  number of cores being requested
   """
-  def machine_request(region_code, memory_needed, cores_needed) do
-    case Store.machine_request(region_code, memory_needed, cores_needed) do
+  @gb_multiplier 1000 * 1000 * 1000
+  @spec machine_request(binary(), integer(), integer()) :: {:ok, map()} | {:error, binary()}
+  def machine_request(region_code, memory_gb, cores_needed) do
+    memory = memory_gb * @gb_multiplier
+    case Store.machine_request(region_code, memory, cores_needed) do
       nil ->
         {:error, "Unable to allocate VM for #{region_code}"}
 

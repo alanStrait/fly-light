@@ -11,12 +11,13 @@ defmodule FlyKvWeb.RegionController do
     |> render(:index, regions: regions)
   end
 
-  def allocate(conn, %{"region_code" => region_code, "memory_gb" => memory_gb, "cores" => cores_str}) do
+  def allocate(conn, %{"region_code" => region_code, "memory_gb" => memory_gb, "cores" => cores}) do
     # TODO: Validate input values
-    memory = String.to_integer(memory_gb) * 1_000_000_000
-    cores = String.to_integer(cores_str)
+    memory_gb = ensure_numeric(memory_gb)
+    cores = ensure_numeric(cores)
+    IO.inspect("\nALLOCATE memory_gb #{inspect memory_gb} cores #{inspect cores}\n")
     # WIP: refine FlyKv
-    case FlyKv.machine_request(region_code, memory, cores) do
+    case FlyKv.machine_request(region_code, memory_gb, cores) do
       {:ok, machine} ->
         machine = Map.from_struct(machine)
         render(conn, :machine, machine: machine)
@@ -37,4 +38,7 @@ defmodule FlyKvWeb.RegionController do
     |> put_status(:ok)
     |> render(:metrics_updated, %{region_code: region_code, request_response: request_response})
   end
+
+  defp ensure_numeric(value) when is_integer(value), do: value
+  defp ensure_numeric(value) when is_binary(value), do: String.to_integer(value)
 end
