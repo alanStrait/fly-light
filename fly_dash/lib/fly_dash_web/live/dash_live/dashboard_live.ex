@@ -62,7 +62,8 @@ defmodule FlyDashWeb.DashboardLive do
     end
   end
 
-  defp relative_time(_time) do
-    "10:00:00"
+  defp formatted_time(time) do
+    {:ok, dt, 0} = DateTime.from_iso8601(time)
+    Calendar.strftime(dt, "%Y-%m-%d %H:%M:%S")
   end
 end

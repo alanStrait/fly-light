@@ -19,7 +19,9 @@ defmodule FlyKv.Machine do
     :memory_allocated,
     :cores_total,
     :cores_allocated,
-    :status
+    :status,
+    created_at: nil,
+    updated_at: nil
   ]
 
   @type t :: %__MODULE__{
@@ -40,7 +42,9 @@ defmodule FlyKv.Machine do
           memory_allocated: integer(),
           cores_total: integer(),
           cores_allocated: integer(),
-          status: binary()
+          status: binary(),
+          created_at: DateTime.t(),
+          updated_at: DateTime.t()
         }
 
   NimbleCSV.define(MachineParser, separator: ",")
@@ -48,6 +52,8 @@ defmodule FlyKv.Machine do
   @data_path Application.compile_env(:fly_kv, __MODULE__)[:data_path]
   @machine_data_file Path.join(File.cwd!(), @data_path)
   def read_machine_data do
+    now = DateTime.utc_now()
+
     @machine_data_file
     |> File.stream!()
     |> MachineParser.parse_stream()
@@ -91,7 +97,9 @@ defmodule FlyKv.Machine do
         memory_allocated: String.to_integer(memory_allocated),
         cores_total: String.to_integer(cores_total),
         cores_allocated: String.to_integer(cores_allocated),
-        status: status
+        status: status,
+        created_at: now,
+        updated_at: now
       }
     end)
     |> Enum.map(&struct(__MODULE__, &1))

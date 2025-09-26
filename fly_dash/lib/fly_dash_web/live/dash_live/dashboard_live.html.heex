@@ -45,7 +45,7 @@
               <div class="text-sm space-y-1">
                 <div>CPU: <%= machine["cores"] %> cores</div>
                 <div>RAM: <%= machine["memory_gb"] %> GB</div>
-                <%!-- <div class="text-xs text-[#A0A0A0]">Updated: <%= relative_time(machine.updated_at) %></div> --%>
+                <div class="text-xs text-[#A0A0A0]">Updated: <%= formatted_time(machine["updated_at"]) %></div>
               </div>
             </div>
           </div>
