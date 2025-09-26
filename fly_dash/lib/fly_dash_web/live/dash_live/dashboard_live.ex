@@ -66,4 +66,25 @@ defmodule FlyDashWeb.DashboardLive do
     {:ok, dt, 0} = DateTime.from_iso8601(time)
     Calendar.strftime(dt, "%Y-%m-%d %H:%M:%S")
   end
+
+  defp extract_name(input) when is_binary(input) do
+    cond do
+      # Match IPv4 address (e.g., 192.168.1.1)
+      Regex.match?(~r/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/, input) ->
+        input
+
+      # Match hostname with period (e.g., consul-node-12.other)
+      # Regex.match?(~r/^[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/, input) ->
+      Regex.match?(~r/^[a-zA-Z0-9-]+/, input) ->
+        String.split(input, "\.") |> hd()
+
+      # Default case (no period or other format)
+      true ->
+        input
+    end
+  end
+
+  defp memory_gb(memory) do
+    memory / 1_000_000_000
+  end
 end
