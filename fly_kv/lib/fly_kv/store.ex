@@ -113,6 +113,8 @@ defmodule FlyKv.Store do
       # allocate first match
       |> List.first()
 
+    now = DateTime.utc_now()
+
     {machine, state} =
       if machine_kv == nil do
         {nil, state}
@@ -122,7 +124,8 @@ defmodule FlyKv.Store do
         machine_prime = %Machine{
           machine
           | memory_allocated: machine.memory_allocated + memory_needed,
-            cores_allocated: machine.cores_allocated + cores_needed
+            cores_allocated: machine.cores_allocated + cores_needed,
+            updated_at: now
         }
 
         state = put_machine(state, region_code, key, machine_prime)
