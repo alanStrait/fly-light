@@ -1,0 +1,22 @@
+# Binaries for programs
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Go specific
+/bin/
+/cmd/*/bin/
+/cmd/*/*.exe
+/cmd/*/*.bin
+
+# Specific to flyctl
+/cmd/flyctl/flyctl
+# flyctl
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
