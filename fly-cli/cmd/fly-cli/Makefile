@@ -1,4 +1,4 @@
-BINARY_NAME = flyctl
+BINARY_NAME = fly-cli
 VERSION = 0.1.0
 
 build:

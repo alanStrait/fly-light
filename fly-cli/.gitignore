@@ -11,9 +11,9 @@
 /cmd/*/*.exe
 /cmd/*/*.bin
 
-# Specific to flyctl
-/cmd/flyctl/flyctl
-# flyctl
+# Specific to fly-cli
+/cmd/fly-cli/fly-cli
+# fly-cli
 
 # Test binary, built with `go test -c`
 *.test

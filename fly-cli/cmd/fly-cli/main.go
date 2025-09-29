@@ -213,7 +213,7 @@ func requestVMAllocation() error {
 
 	// Set headers
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("User-Agent", "flyctl/0.1.0")
+	req.Header.Set("User-Agent", "fly-cli/0.1.0")
 
 	// Execute request
 	client := &http.Client{}
