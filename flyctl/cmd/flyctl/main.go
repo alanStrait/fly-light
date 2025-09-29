@@ -1,11 +1,14 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"flag"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
+	"net/url"
 	"os"
 	"sort"
 	"text/tabwriter"
@@ -33,6 +36,23 @@ type Machine struct {
 	UpdatedAt  time.Time `json:"updated_at"`
 }
 
+// VM dimensions being requiested
+type AllocationRequest struct {
+	Region   string `json:"region"`
+	MemoryGB int    `json:"memory_gb"`
+	Cores    int    `json:"cores"`
+}
+
+// AllocationResponse from Phoenix
+type AllocationResponse struct {
+	Data struct {
+		Success   bool   `json:"success"`
+		Message   string `json:"message"`
+		MachineID string `json:"machine_id,omitempty"`
+		Error     string `json:"error,omitempty"`
+	} `json:"data"`
+}
+
 // APIResponse from Fly.io API
 type APIResponse struct {
 	Data []Region `json:"data"`
@@ -44,6 +64,10 @@ var (
 	jsonOutput = flag.Bool("json", false, "Output in JSON format")
 	sortBy     = flag.String("sort", "code", "Sort by: code, location, status")
 	filter     = flag.String("filter", "", "Filter by status: online, offline, maintenance")
+	vmRegion   = flag.String("vm-region", "", "Region for VM allocation")
+	vmMemory   = flag.Int("vm-memory", 0, "Memory in GB for VM")
+	vmCores    = flag.Int("vm-cores", 0, "Number of CPU cores for VM")
+	apiBase    = flag.String("api-base", "http://localhost:4010/", "Base API URL")
 )
 
 func main() {
@@ -72,6 +96,20 @@ func run() error {
 	if *jsonOutput {
 		return outputJSON(regions)
 	}
+
+	// Request VM
+	if *vmRegion != "" || *vmMemory > 0 || *vmCores > 0 {
+		if err := validateVMRequest(); err != nil {
+			log.Fatalf("Error: %v", err)
+		}
+		fmt.Printf("Requesting VM: Region=%s, MemoryGB=%dGB, Cores=%d\n\n\n",
+			*vmRegion, *vmMemory, *vmCores)
+
+		if err := requestVMAllocation(); err != nil {
+			log.Fatalf("Allocation faileld: %v", err)
+		}
+	}
+
 	return outputTable(regions)
 }
 
@@ -128,6 +166,94 @@ func sortRegions(regions []Region, by string) {
 			return regions[i].Code < regions[j].Code
 		})
 	}
+}
+
+func validateVMRequest() error {
+	if *vmRegion == "" {
+		return fmt.Errorf("region is required")
+	}
+	if *vmMemory < 1 || *vmMemory > 256 {
+		return fmt.Errorf("memory must be between 1-256 GB")
+	}
+	if *vmCores < 1 || *vmCores > 32 {
+		return fmt.Errorf("cores must be between 1-32")
+	}
+	return nil
+}
+
+func requestVMAllocation() error {
+	// Build the request payload
+	reqBody := AllocationRequest{
+		Region:   *vmRegion,
+		MemoryGB: *vmMemory,
+		Cores:    *vmCores,
+	}
+
+	// Convert to JSON
+	jsonData, err := json.Marshal(reqBody)
+	if err != nil {
+		return fmt.Errorf("failed to marshal request: %w", err)
+	}
+
+	// Build the URL
+	baseURL, err := url.Parse(*apiBase)
+	if err != nil {
+		return fmt.Errorf("invalid API base URL: %w", err)
+	}
+
+	// Construct the endpoint path
+	endpoint := fmt.Sprintf("/fly-kv/regions/%s/allocate", url.PathEscape(*vmRegion))
+	fullURL := baseURL.ResolveReference(&url.URL{Path: endpoint}).String()
+
+	// Create HTTP request
+	req, err := http.NewRequest("POST", fullURL, bytes.NewBuffer(jsonData))
+	if err != nil {
+		return fmt.Errorf("failed to create request: %w", err)
+	}
+
+	// Set headers
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("User-Agent", "flyctl/0.1.0")
+
+	// Execute request
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return fmt.Errorf("HTTP request failed: %w", err)
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return fmt.Errorf("failed to read response body: %w", err)
+	}
+
+	if *verbose {
+		fmt.Printf("\nResponse body: %s\n", body)
+	}
+
+	// Check response status
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("API returned status %d: %s\nResponse: %s",
+			resp.StatusCode, resp.Status, string(body))
+	}
+
+	// Parse response
+	var allocationResp AllocationResponse
+	if err := json.Unmarshal(body, &allocationResp); err != nil {
+		return fmt.Errorf("failed to parse response: %w\nRaw response: %s", err, string(body))
+	}
+
+	// Handle response
+	if allocationResp.Data.Success {
+		fmt.Printf("✅ Allocation successful!\n")
+		fmt.Printf("   Machine ID: %s\n", allocationResp.Data.MachineID)
+		fmt.Printf("   Message: %s\n", allocationResp.Data.Message)
+	} else {
+		return fmt.Errorf("allocation failed: %s", allocationResp.Data.Error)
+	}
+
+	return nil
 }
 
 func outputJSON(regions []Region) error {

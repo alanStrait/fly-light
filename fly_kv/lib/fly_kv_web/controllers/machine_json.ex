@@ -1,6 +1,11 @@
 defmodule FlyKvWeb.MachineJSON do
   def render("show.json", %{machine: machine}) do
-    machine
+    %{
+      success: true,
+      message: "VM allocated successfully",
+      machine_id: machine.address,
+      machine: machine
+    }
   end
 
   def render("index.json", %{machines: machines}) do
