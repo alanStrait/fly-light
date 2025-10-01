@@ -56,6 +56,13 @@ defmodule FlyKv.Store do
     GenServer.call(__MODULE__, {:machine_request, region_code, memory_needed, cores_needed})
   end
 
+  def update_machine(region_code, address, memory_allocated, cores_allocated, status) do
+    GenServer.call(
+      __MODULE__,
+      {:update_machine, region_code, address, memory_allocated, cores_allocated, status}
+    )
+  end
+
   # Server callbacks
 
   @impl true
@@ -76,6 +83,7 @@ defmodule FlyKv.Store do
           state.machines
           |> Map.get(region.code, %{})
           |> Enum.into([], fn {_k, machine} -> machine end)
+
         update_in(region.machines, fn _machines -> machines_p end)
       end)
 
@@ -89,10 +97,7 @@ defmodule FlyKv.Store do
 
   @impl true
   def handle_call({:machine_for_region, region_code, machine_address}, _from, state) do
-    machine =
-      state.machines
-      |> Map.get(region_code)
-      |> Map.get(region_code <> "::" <> machine_address)
+    machine = fetch_machine(state, region_code, machine_address)
 
     {:reply, machine, state}
   end
@@ -136,6 +141,30 @@ defmodule FlyKv.Store do
     {:reply, machine, state}
   end
 
+  def handle_call(
+        {:update_machine, region_code, address, memory_allocated, cores_allocated, status},
+        _from,
+        state
+      ) do
+    case fetch_machine(state, region_code, address) do
+      nil ->
+        {:reply, {:error, "Machine not found"}, state}
+
+      machine ->
+        key = compose_key(region_code, address)
+
+        machine_prime = %Machine{
+          machine
+          | memory_allocated: machine.memory_allocated + memory_allocated,
+            cores_allocated: machine.cores_allocated + cores_allocated,
+            status: status
+        }
+
+        state_prime = put_machine(state, region_code, key, machine_prime)
+        {:reply, {:ok, machine_prime}, state_prime}
+    end
+  end
+
   @impl true
   def handle_continue(_continue_arg, _state) do
     state =
@@ -147,11 +176,21 @@ defmodule FlyKv.Store do
     {:noreply, state}
   end
 
+  defp fetch_machine(state, region_code, machine_address) do
+    state.machines
+    |> Map.get(region_code)
+    |> Map.get(compose_key(region_code, machine_address))
+  end
+
   defp put_machine(state, region_code, machine_key, machine) do
     update_in(
       state,
       [:machines, region_code, machine_key],
       fn _machine -> machine end
     )
+  end
+
+  defp compose_key(region_code, machine_address) do
+    region_code <> "::" <> machine_address
   end
 end

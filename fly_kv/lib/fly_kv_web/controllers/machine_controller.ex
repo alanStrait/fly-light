@@ -21,4 +21,24 @@ defmodule FlyKvWeb.MachineController do
     conn
     |> render(:show, %{machine: machine, region_code: region_code})
   end
+
+  def update(
+        conn,
+        %{
+          "region_code" => region_code,
+          "id" => address,
+          "memory_allocated_gb" => memory_allocated_gb,
+          "cores_allocated" => cores_allocated,
+          "status" => status
+        }
+      ) do
+    case FlyKv.update_machine(region_code, address, memory_allocated_gb, cores_allocated, status) do
+      {:ok, machine} -> #{:ok, machine}
+        conn |> render(:show, %{machine: machine, region_code: region_code})
+
+      {:error, reason} -> #{:error, reason}
+        conn |> render(:error, error: reason)
+    end
+
+  end
 end
