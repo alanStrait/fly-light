@@ -57,12 +57,7 @@ defmodule FlyKv do
   @spec update_machine(binary(), binary(), integer(), integer(), binary()) ::
         {:ok, FlyKv.Machine.t()} | {:error, binary()}
   def update_machine(region_code, address, memory_allocated_gb, cores_allocated, status) do
-    if (memory_allocated_gb > 0 && memory_allocated_gb <= 32) &&
-       (cores_allocated > 0 && cores_allocated < 32) do
       memory_allocated = memory_allocated_gb * @gb_multiplier
       Store.update_machine(region_code, address, memory_allocated, cores_allocated, status)
-    else
-      {:error, "Invalid arguments"}
-    end
   end
 end
