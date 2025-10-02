@@ -2,6 +2,7 @@ defmodule FlyGlobal.FlyD do
   use GenServer
 
   alias FlyGlobal.ProcessRegistry
+  alias FlyGlobal.Client
 
   defstruct [
     :region_code,
@@ -12,12 +13,12 @@ defmodule FlyGlobal.FlyD do
   ]
 
   @type t :: %__MODULE__{
-    region_code: String.t(),
-    address: String.t(),
-    memory_allocated_gb: integer(),
-    cores_allocated: integer(),
-    status: String.t()
-  }
+          region_code: String.t(),
+          address: String.t(),
+          memory_allocated_gb: integer(),
+          cores_allocated: integer(),
+          status: String.t()
+        }
 
   # @type s :: %{
   #   region_code: String.t(),
@@ -55,6 +56,7 @@ defmodule FlyGlobal.FlyD do
   @impl true
   def handle_cast({:register_change, memory_gb, cores, status}, state) do
     IO.puts("\nHANDLE_CAST\n")
+
     fly_d =
       %__MODULE__{
         region_code: state.region_code,
@@ -65,7 +67,7 @@ defmodule FlyGlobal.FlyD do
       }
 
     state_prime =
-      update_in(state[:queue], fn queue -> [fly_d| queue] end)
+      update_in(state[:queue], fn queue -> [fly_d | queue] end)
       |> IO.inspect(label: "\nHERE\n")
 
     {:noreply, state_prime}
@@ -76,16 +78,70 @@ defmodule FlyGlobal.FlyD do
     {:ok, %{}, {:continue, init_args}}
   end
 
+  @loop_interval 15_000
   @impl true
-  def handle_continue({region_code, %{"address" => address} = machine}, _state) do
+  def handle_continue({region_code, %{"address" => address}}, _state) do
     fly_d =
       %{
         region_code: region_code,
         address: address,
-        queue: []
+        queue: [],
+        loop_ref: nil
       }
       |> IO.inspect(label: "\nCONTD\n")
 
-    {:noreply, fly_d}
+    loop_ref = Process.send_after(self(), :push_flyd_queue_to_store, @loop_interval)
+
+    {:noreply, %{fly_d | loop_ref: loop_ref}}
+  end
+
+  @impl true
+  def handle_info(:push_flyd_queue_to_store, state) do
+    state_prime = push_queue(state)
+    loop_ref = Process.send_after(self(), :push_flyd_queue_to_store, @loop_interval)
+    {:noreply, %{state_prime | loop_ref: loop_ref}}
+  end
+
+  def push_queue(state) do
+    IO.puts("\npush_queue, PID #{inspect self()}\n")
+    state_prime =
+      case conflate(state.queue) do
+        [] -> state
+
+        flyd ->
+          IO.inspect(flyd, label: "\nCONFLATED FLYDs\n")
+          case Client.patch_machine(state.region_code, state.address, flyd) do
+
+            {:ok, body} ->
+              IO.puts("Successfully patched #{state.region_code} #{state.address} with #{inspect body}")
+              %{state | queue: []}
+
+            {:error, reason} ->
+              IO.puts("Error Patching #{state.region_code} #{state.address} due to #{inspect reason}")
+              state
+
+            other ->
+              IO.inspect(other, label: "\nOTHER\n")
+              %{state | queue: []}
+
+          end
+      end
+
+    state_prime
+  end
+
+  defp conflate([]), do: []
+  defp conflate([flyd|[]]), do: flyd
+  defp conflate(flyd_list) do
+    flyd_list
+    |> Enum.reverse()
+    |> Enum.reduce(fn flyd, acc ->
+      %__MODULE__{
+        acc |
+        memory_allocated_gb: acc.memory_allocated_gb + flyd.memory_allocated_gb,
+        cores_allocated: acc.cores_allocated + flyd.cores_allocated,
+        status: flyd.status
+      }
+    end)
   end
 end
