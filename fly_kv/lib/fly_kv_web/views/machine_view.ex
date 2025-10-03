@@ -20,6 +20,7 @@ defmodule FlyKvWeb.MachineView do
       cpu: machine.cpu,
       memory_mb: machine.memory_mb
     }
+
     # Handle the simulated 'updated_fields'
     Map.merge(base_map, Map.get(machine, :updated_fields, %{}))
   end
