@@ -28,6 +28,13 @@ defmodule FlyKv.Store do
     GenServer.call(__MODULE__, :fetch_regions_with_machines)
   end
 
+  def machine_candidates_for(region_code, memory, cores, num_candidates) do
+    GenServer.call(
+      __MODULE__,
+      {:machine_candidates_for, region_code, memory, cores, num_candidates}
+    )
+  end
+
   @doc """
   machines_for_region returns a list of machines and their state for
   a given region_code.
@@ -88,6 +95,26 @@ defmodule FlyKv.Store do
       end)
 
     {:reply, regions, state}
+  end
+
+  @impl true
+  def handle_call(
+        {:machine_candidates_for, region_code, memory, cores, num_candidates},
+        _from,
+        state
+      ) do
+    candidates =
+      state.machines
+      |> Map.get(region_code, %{})
+      |> Map.filter(fn {_k, machine} ->
+        machine.memory_total - machine.memory_allocated >= memory &&
+          machine.cores_total - machine.cores_allocated >= cores
+      end)
+      |> Enum.shuffle()
+      |> Enum.take(num_candidates)
+      |> Enum.into([], &elem(&1, 1))
+
+    {:reply, candidates, state}
   end
 
   @impl true

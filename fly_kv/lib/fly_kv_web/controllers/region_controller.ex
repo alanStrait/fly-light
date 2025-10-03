@@ -22,7 +22,19 @@ defmodule FlyKvWeb.RegionController do
         conn
         |> put_status(:unprocessable_entity)
         |> render(:error, error: reason)
-      end
+    end
+  end
+
+  def candidates(conn, %{
+        "region_code" => region_code,
+        "memory_gb" => memory_gb,
+        "cores" => cores,
+        "num_candidates" => num_candidates
+      }) do
+    machines = FlyKv.machine_candidates_for(region_code, memory_gb, cores, num_candidates)
+
+    conn
+    |> render(:machine, machines: machines)
   end
 
   # PUT /fly-kv/regions/:region_code/metrics

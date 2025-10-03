@@ -21,12 +21,12 @@ defmodule FlyKvWeb.Router do
     resources "/regions/:region_code/machines", MachineController, only: [:index, :show, :update]
     # POST ask for VM, given memory and cores desired, for a region
     post "/regions/:region_code/allocate", RegionController, :allocate
+    get "/regions/:region_code/machine/candidates", RegionController, :candidates
 
     # I've reinterpreted this as a metric endpoint for a region.
     # PUT /fly-kv/regions/:region_code/metrics
     put "/regions/:region_code/metrics", RegionController, :update_metrics
   end
-
 
   # Enable LiveDashboard in development
   if Application.compile_env(:fly_kv, :dev_routes) do

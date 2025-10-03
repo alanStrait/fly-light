@@ -18,6 +18,10 @@ defmodule FlyKvWeb.RegionJSON do
     }
   end
 
+  def render("machine.json", %{machines: machines}) do
+    %{data: MachineJSON.render("index.json", %{machines: machines})}
+  end
+
   def render("machine.json", %{machine: machine}) do
     %{data: MachineJSON.render("show.json", %{machine: machine})}
   end
