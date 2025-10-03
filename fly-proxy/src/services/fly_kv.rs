@@ -1,61 +1,64 @@
-use crate::models::{Region, RegionsResponse};
-use anyhow::Result;
+// src/services/fly_kv.rs
 use reqwest::Client;
+use serde::{Deserialize, Serialize};
+use anyhow::{Result, Context};
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct FlyKVService {
     client: Client,
     base_url: String,
-    auth_token: Option<String>,
 }
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct RegionsResponse {
+    pub data: Vec<Region>,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct Region {
+    pub code: String,
+    pub status: String,
+    pub location: String,
+}
+
+
 
 impl FlyKVService {
     pub fn new() -> Self {
         FlyKVService {
             client: Client::new(),
-            base_url: "https://localhost:4010/".to_string(),
-            auth_token: None,
+            base_url: "http://localhost:4010/".to_string(),
         }
     }
 
     pub async fn list_regions(&self) -> Result<RegionsResponse> {
-        // Mock implementation - in production, this would connect to actual Fly KV
-        let regions = vec![
-            Region {
-                id: "iad".to_string(),
-                name: "Northern Virginia".to_string(),
-                code: "iad".to_string(),
-                enabled: true,
-            },
-            Region {
-                id: "ams".to_string(),
-                name: "Amsterdam".to_string(),
-                code: "ams".to_string(),
-                enabled: true,
-            },
-            Region {
-                id: "sin".to_string(),
-                name: "Singapore".to_string(),
-                code: "sin".to_string(),
-                enabled: false,
-            },
-        ];
+        let url = format!("{}fly-kv/regions/", self.base_url);
+        
+        let response = self.client
+            .get(&url)
+            .send()
+            .await
+            .context("Failed to send request to Fly KV regions endpoint")?;
+        
+        let status = response.status();
 
-        Ok(RegionsResponse {
-            count: regions.len(),
-            regions,
-        })
+        if !status.is_success() {
+            let response_text = response.text().await.unwrap_or_default();
+
+            anyhow::bail!(
+                "Fly KV regions API returned error status: {} - {}",
+                status,
+                response_text
+            );
+        }
+        
+        // Parse directly into the RegionsResponse struct that matches the API
+        let regions_response: RegionsResponse = response
+            .json()
+            .await
+            .context("Failed to parse Fly KV regions response")?;
+            
+        Ok(regions_response)
     }
-}
-
-impl Clone for FlyKVService {
-   fn clone(&self) -> Self {
-       FlyKVService {
-           client: self.client.clone(),
-           base_url: self.base_url.clone(),
-           auth_token: self.auth_token.clone(),
-           // Clone any other fields
-       }
-   }
 
 }
