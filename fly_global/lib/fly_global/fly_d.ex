@@ -2,7 +2,7 @@ defmodule FlyGlobal.FlyD do
   use GenServer
 
   alias FlyGlobal.ProcessRegistry
-  alias FlyGlobal.Client
+  alias FlyGlobal.FlyKv.Client
 
   defstruct [
     :region_code,

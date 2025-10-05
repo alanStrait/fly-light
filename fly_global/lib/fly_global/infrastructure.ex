@@ -1,6 +1,11 @@
 defmodule FlyGlobal.Infrastructure do
   use GenServer
 
+  @moduledoc """
+  Infrastucture is a `GenServer` that sets up `MachineeD` and `FlyD`
+  GenServers using FlyKv data describing available machines by region.
+  """
+
   # Client API
   def start_link(default) do
     GenServer.start_link(__MODULE__, default, name: __MODULE__)

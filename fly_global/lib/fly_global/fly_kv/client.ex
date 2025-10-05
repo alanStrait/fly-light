@@ -1,7 +1,8 @@
-defmodule FlyGlobal.Client do
+defmodule FlyGlobal.FlyKv.Client do
   @base_url "http://localhost:4010/"
   @region_path "/fly-kv/regions/"
   @machines_path "/machines/"
+  @machine_candidates_path "/machine/candidates"
 
   alias FlyGlobal.FlyD
 
@@ -12,6 +13,17 @@ defmodule FlyGlobal.Client do
 
       {:error, exception} ->
         raise(exception)
+    end
+  end
+
+  def fetch_machine_candidates(region_code, memory_gb, cores, num_candidates) do
+    query_params = [memory_gb: memory_gb, cores: cores, num_candidates: num_candidates]
+    case Req.get(candidate_url(region_code), params: query_params) do
+      {:ok, response} ->
+        response.body |> IO.inspect(label: "\nBODY\n")
+
+      {:error, reason} ->
+        raise(reason)
     end
   end
 
@@ -26,6 +38,10 @@ defmodule FlyGlobal.Client do
     end
   end
 
+  defp candidate_url(region_code) do
+    region_url() <> region_code <> @machine_candidates_path
+  end
+
   defp machine_url(region_code, address) do
     region_url() <> region_code <> @machines_path <> address
   end
@@ -33,4 +49,5 @@ defmodule FlyGlobal.Client do
   defp region_url do
     @base_url <> @region_path
   end
+
 end

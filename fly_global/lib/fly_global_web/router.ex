@@ -9,6 +9,10 @@ defmodule FlyGlobalWeb.Router do
     pipe_through :api
   end
 
+  scope "/fly-global", FlyGlobalWeb do
+    post "/regions/:region_code/allocate", InfrastructureController, :allocate
+  end
+
   # Enable LiveDashboard in development
   if Application.compile_env(:fly_global, :dev_routes) do
     # If you want to use the LiveDashboard in production, you should put

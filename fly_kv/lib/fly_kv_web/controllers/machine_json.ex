@@ -9,9 +9,7 @@ defmodule FlyKvWeb.MachineJSON do
   end
 
   def render("index.json", %{machines: machines}) do
-    %{
-      data: Enum.map(machines, &render("show.json", %{machine: &1}))
-    }
+    Enum.map(machines, &render("show.json", %{machine: &1}))
   end
 
   def render("machine.json", %{machine: _machine} = machine_map) do
