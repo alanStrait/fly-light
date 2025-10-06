@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bytes"
 	"encoding/json"
 	"flag"
 	"fmt"
@@ -59,7 +58,8 @@ type APIResponse struct {
 }
 
 var (
-	apiURL     = flag.String("api", "http://localhost:4010/fly-kv/regions", "API endpoint URL")
+	// apiURL = flag.String("api", "http://localhost:4010/fly-kv/regions", "API endpoint URL")
+	apiURL     = flag.String("api", "http://127.0.0.1:3030/regions", "API endpoint URL")
 	verbose    = flag.Bool("verbose", false, "Enable verbose output")
 	jsonOutput = flag.Bool("json", false, "Output in JSON format")
 	sortBy     = flag.String("sort", "code", "Sort by: code, location, status")
@@ -67,7 +67,8 @@ var (
 	vmRegion   = flag.String("vm-region", "", "Region for VM allocation")
 	vmMemory   = flag.Int("vm-memory", 0, "Memory in GB for VM")
 	vmCores    = flag.Int("vm-cores", 0, "Number of CPU cores for VM")
-	apiBase    = flag.String("api-base", "http://localhost:4010/", "Base API URL")
+	// apiBase    = flag.String("api-base", "http://localhost:4010/", "Base API URL")
+	apiBase = flag.String("api-base", "http://127.0.0.1:3030/", "Base API URL")
 )
 
 func main() {
@@ -182,18 +183,7 @@ func validateVMRequest() error {
 }
 
 func requestVMAllocation() error {
-	// Build the request payload
-	reqBody := AllocationRequest{
-		Region:   *vmRegion,
-		MemoryGB: *vmMemory,
-		Cores:    *vmCores,
-	}
-
-	// Convert to JSON
-	jsonData, err := json.Marshal(reqBody)
-	if err != nil {
-		return fmt.Errorf("failed to marshal request: %w", err)
-	}
+	fmt.Println("\nrequestVMAllocation")
 
 	// Build the URL
 	baseURL, err := url.Parse(*apiBase)
@@ -201,18 +191,25 @@ func requestVMAllocation() error {
 		return fmt.Errorf("invalid API base URL: %w", err)
 	}
 
-	// Construct the endpoint path
-	endpoint := fmt.Sprintf("/fly-kv/regions/%s/allocate", url.PathEscape(*vmRegion))
-	fullURL := baseURL.ResolveReference(&url.URL{Path: endpoint}).String()
+	fullURL := baseURL.ResolveReference(&url.URL{Path: "/launch"})
+
+	query := fullURL.Query()
+	query.Add("vm_region", *vmRegion)
+	query.Add("vm_memory", fmt.Sprintf("%d", *vmMemory))
+	query.Add("vm_cores", fmt.Sprintf("%d", *vmCores))
+	query.Add("num_candidates", "5")
+	fullURL.RawQuery = query.Encode()
+
+	fmt.Printf("Request URL: %s\n", fullURL.String())
 
 	// Create HTTP request
-	req, err := http.NewRequest("POST", fullURL, bytes.NewBuffer(jsonData))
+	req, err := http.NewRequest("GET", fullURL.String(), nil)
 	if err != nil {
 		return fmt.Errorf("failed to create request: %w", err)
 	}
 
 	// Set headers
-	req.Header.Set("Content-Type", "application/json")
+	// req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("User-Agent", "fly-cli/0.1.0")
 
 	// Execute request

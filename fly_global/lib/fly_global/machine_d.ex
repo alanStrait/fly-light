@@ -3,6 +3,7 @@ defmodule FlyGlobal.MachineD do
 
   alias FlyGlobal.ProcessRegistry
 
+  @derive Jason.Encoder
   defstruct [
     :region_code,
     :address,

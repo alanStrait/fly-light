@@ -10,6 +10,8 @@ defmodule FlyGlobalWeb.Router do
   end
 
   scope "/fly-global", FlyGlobalWeb do
+    pipe_through :api
+
     post "/regions/:region_code/allocate", InfrastructureController, :allocate
   end
 

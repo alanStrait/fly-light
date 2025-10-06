@@ -33,6 +33,8 @@ impl FlyKVService {
 
     pub async fn list_regions(&self) -> Result<RegionsResponse> {
         let url = format!("{}fly-kv/regions/", self.base_url);
+
+        println!("URL {}", url);
         
         let response = self.client
             .get(&url)

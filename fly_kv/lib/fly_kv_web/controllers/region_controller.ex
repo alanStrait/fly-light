@@ -10,6 +10,7 @@ defmodule FlyKvWeb.RegionController do
   end
 
   def allocate(conn, %{"region_code" => region_code, "memory_gb" => memory_gb, "cores" => cores}) do
+    IO.puts("\nALLOCATE\n")
     # TODO: Validate input values
     memory_gb = ensure_numeric(memory_gb)
     cores = ensure_numeric(cores)

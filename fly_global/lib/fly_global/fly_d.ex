@@ -103,7 +103,6 @@ defmodule FlyGlobal.FlyD do
   end
 
   def push_queue(state) do
-    IO.puts("\npush_queue, PID #{inspect self()}\n")
     state_prime =
       case conflate(state.queue) do
         [] -> state
