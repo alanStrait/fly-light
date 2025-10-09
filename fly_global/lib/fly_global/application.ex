@@ -10,7 +10,7 @@ defmodule FlyGlobal.Application do
     children = [
       FlyGlobalWeb.Telemetry,
       {DNSCluster, query: Application.get_env(:fly_global, :dns_cluster_query) || :ignore},
-      {Phoenix.PubSub, name: FlyGlobal.PubSub},
+      {Phoenix.PubSub, name: Flylight.PubSub},
       # Start a worker by calling: FlyGlobal.Worker.start_link(arg)
       # {FlyGlobal.Worker, arg},
       # Start to serve requests, typically the last entry

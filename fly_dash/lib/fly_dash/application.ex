@@ -11,7 +11,8 @@ defmodule FlyDash.Application do
       FlyDashWeb.Telemetry,
       FlyDash.Repo,
       {DNSCluster, query: Application.get_env(:fly_dash, :dns_cluster_query) || :ignore},
-      {Phoenix.PubSub, name: FlyDash.PubSub},
+      {Phoenix.PubSub, name: Flylight.PubSub, adapter: Phoenix.PubSub.PG2},
+      FlyDash.KvSubscriber,
       # Start a worker by calling: FlyDash.Worker.start_link(arg)
       # {FlyDash.Worker, arg},
       # Start to serve requests, typically the last entry

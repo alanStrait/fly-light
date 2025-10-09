@@ -18,7 +18,7 @@ config :fly_global, FlyGlobalWeb.Endpoint,
     formats: [json: FlyGlobalWeb.ErrorJSON],
     layout: false
   ],
-  pubsub_server: FlyGlobal.PubSub,
+  pubsub_server: Flylight.PubSub,
   live_view: [signing_salt: "C2HkexKI"]
 
 # Configures Elixir's Logger

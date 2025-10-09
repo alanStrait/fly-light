@@ -4,7 +4,7 @@ defmodule FlyKv.Store do
   """
   use GenServer
 
-  alias FlyKv.{Region, Machine}
+  alias FlyKv.{Machine, Notifications, Region}
 
   # Client API
 
@@ -180,14 +180,28 @@ defmodule FlyKv.Store do
       machine ->
         key = compose_key(region_code, address)
 
+        now = DateTime.utc_now()
+
         machine_prime = %Machine{
           machine
           | memory_allocated: machine.memory_allocated + memory_allocated,
             cores_allocated: machine.cores_allocated + cores_allocated,
-            status: status
+            status: status,
+            updated_at: now
         }
 
         state_prime = put_machine(state, region_code, key, machine_prime)
+
+        Notifications.broadcast_update(
+          region_code,
+          machine_prime.address,
+          machine_prime.memory_allocated,
+          machine_prime.cores_allocated,
+          machine_prime.status,
+          now
+        )
+        |> IO.inspect(label: "\nNOTIFICATION RESULT\t")
+
         {:reply, {:ok, machine_prime}, state_prime}
     end
   end

@@ -19,7 +19,7 @@ config :fly_dash, FlyDashWeb.Endpoint,
     formats: [html: FlyDashWeb.ErrorHTML, json: FlyDashWeb.ErrorJSON],
     layout: false
   ],
-  pubsub_server: FlyDash.PubSub,
+  pubsub_server: Flylight.PubSub,
   live_view: [signing_salt: "Vvhkyh/e"]
 
 # Configures the mailer

@@ -10,48 +10,60 @@
     <div class="lg:col-span-1">
       <div class="bg-[#1A1B23] rounded-lg border border-[#2D2E36] p-4">
         <h2 class="text-lg font-semibold text-[#8B5CF6] mb-4">Regions</h2>
-        <div :for={region <- @regions} 
-             class={"p-3 mb-2 rounded border border-[#2D2E36] hover:border-[#8B5CF6] cursor-pointer"
-                    if @selected_region && @selected_region["code"] == region["code"], 
-                    do: "border-[#8B5CF6] bg-[#2D2E36]",
-                    else: "border-[#2D2E36]"}
-             phx-click="select_region" 
-             phx-value-region-id={region["code"]}
+        <div
+          :for={region <- @regions}
+          class={
+            "p-3 mb-2 rounded border border-[#2D2E36] hover:border-[#8B5CF6] cursor-pointer"
+
+            if @selected_region && @selected_region["code"] == region["code"],
+              do: "border-[#8B5CF6] bg-[#2D2E36]",
+              else: "border-[#2D2E36]"
+          }
+          phx-click="select_region"
+          phx-value-region-id={region["code"]}
         >
           <div class="flex justify-between items-center">
-            <span class="font-medium"><%= region["code"] %></span>
-            <span class={status_color(region["status"])}><%= region["status"] %></span>
+            <span class="font-medium">{region["code"]}</span>
+            <span class={status_color(region["status"])}>{region["status"]}</span>
           </div>
-          <div class="text-sm text-[#A0A0A0]"><%= region["location"] %></div>
-          <div class="text-xs text-[#8B5CF6]"><%= length(region["machines"]) %> machines</div>
+          <div class="text-sm text-[#A0A0A0]">{region["location"]}</div>
+          <div class="text-xs text-[#8B5CF6]">{length(region["machines"])} machines</div>
         </div>
       </div>
     </div>
-
-    <!-- Main Content - Machines View -->
+    
+<!-- Main Content - Machines View -->
     <div class="lg:col-span-3">
       <%= if @selected_region do %>
         <div class="bg-[#1A1B23] rounded-lg border border-[#2D2E36] p-4">
           <h2 class="text-xl font-semibold text-[#8B5CF6] mb-4">
-            Machines in <%= @selected_region["code"] %>
+            Machines in {@selected_region["code"]}
           </h2>
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <div :for={machine <- @selected_region["machines"]} 
-                 class="bg-[#252631] p-4 rounded border border-[#2D2E36]">
+            <div
+              :for={machine <- @selected_region["machines"]}
+              class="bg-[#252631] p-4 rounded border border-[#2D2E36]"
+            >
               <div class="flex justify-between items-center mb-2">
-                <span class="font-medium"><%= extract_name(machine["address"]) %></span>
-                <span class={machine_status_color(machine["status"])}><%= machine["status"] %></span>
+                <span class="font-medium">{extract_name(machine["address"])}</span>
+                <span class={machine_status_color(machine["status"])}>{machine["status"]}</span>
               </div>
               <div class="flex justify-between items-center mb-2">
-                <span class="font-medium">CPU: <%= machine["cores_total"] %> cores</span>
-                <span class={machine_status_color(machine["status"])}><%= machine["cores_total"] - machine["cores_allocated"] %></span>
+                <span class="font-medium">CPU: {machine["cores_total"]} cores</span>
+                <span class={machine_status_color(machine["status"])}>
+                  {machine["cores_total"] - machine["cores_allocated"]}
+                </span>
               </div>
               <div class="flex justify-between items-center mb-2">
-                <span class="cont-medium">RAM: <%= memory_gb(machine["memory_total"]) %> GB</span>
-                <span class={machine_status_color(machine["status"])}><%= memory_gb(machine["memory_total"] - machine["memory_allocated"]) %></span>
+                <span class="cont-medium">RAM: {memory_gb(machine["memory_total"])} GB</span>
+                <span class={machine_status_color(machine["status"])}>
+                  {memory_gb(machine["memory_total"] - machine["memory_allocated"])}
+                </span>
               </div>
               <div class="text-sm space-y-1">
-                <div class="text-xs text-[#A0A0A0]">Updated: <%= formatted_time(machine["updated_at"]) %></div>
+                <div class="text-xs text-[#A0A0A0]">
+                  Updated: {formatted_time(machine["updated_at"])}
+                </div>
               </div>
             </div>
           </div>

@@ -7,6 +7,9 @@ defmodule FlyGlobal do
   alias FlyGlobal.MachineD
   alias FlyGlobal.FlyKv
 
+  def fetch_regions do
+    FlyKv.fetch_regions()
+  end
 
   def allocate(region_code, memory_gb, cores, num_candidates) do
     # Obtain randomized list of candidate machines

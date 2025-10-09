@@ -10,13 +10,14 @@ defmodule FlyKv.Application do
     children = [
       FlyKvWeb.Telemetry,
       {DNSCluster, query: Application.get_env(:fly_kv, :dns_cluster_query) || :ignore},
-      {Phoenix.PubSub, name: FlyKv.PubSub},
+      {Phoenix.PubSub, [name: Flylight.PubSub, adapter: Phoenix.PubSub.PG2]},
       # Start a worker by calling: FlyKv.Worker.start_link(arg)
       # {FlyKv.Worker, arg},
       # Start to serve requests, typically the last entry
       FlyKvWeb.Endpoint,
       # Add GenServer to supervision tree
-      FlyKv.Store
+      FlyKv.Store,
+      FlyKv.Notifications
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
