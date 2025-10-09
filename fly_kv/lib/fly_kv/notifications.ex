@@ -16,7 +16,7 @@ defmodule FlyKv.Notifications do
   def broadcast_update(
         region_code,
         machine_address,
-        memory_allocated_gb,
+        memory_allocated,
         cores_allocated,
         status,
         updated_at
@@ -26,7 +26,7 @@ defmodule FlyKv.Notifications do
       __MODULE__,
       {:update, region_code, machine_address,
        %{
-         memory_allocated_gb: memory_allocated_gb,
+         memory_allocated: memory_allocated,
          cores_allocated: cores_allocated,
          status: status,
          updated_at: updated_at

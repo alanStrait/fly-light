@@ -2,9 +2,14 @@
 defmodule FlyDashWeb.DashboardLive do
   use FlyDashWeb, :live_view
 
+  alias Phoenix.PubSub
+
   @impl true
   def mount(_params, _session, socket) do
-    if connected?(socket), do: FlyDashWeb.Endpoint.subscribe("machine_updates")
+    if connected?(socket) do
+      FlyDashWeb.Endpoint.subscribe("machine_updates")
+      PubSub.subscribe(Flylight.PubSub, "dashboard_updates")
+    end
 
     # regions = Regions.list_regions_with_machines()
     regions = FlyDash.fetch_regions()
@@ -19,13 +24,6 @@ defmodule FlyDashWeb.DashboardLive do
   end
 
   @impl true
-  def handle_info(%{topic: "machine_updates", payload: update}, socket) do
-    # Handle real-time machine updates
-    updated_regions = update_regions(socket.assigns.regions, update)
-    {:noreply, assign(socket, :regions, updated_regions)}
-  end
-
-  @impl true
   def handle_event("select_region", %{"region-id" => region_id}, socket) do
     # Handle region selection for detail view
     region = Enum.find(socket.assigns.regions, &(&1["code"] == region_id))
@@ -36,6 +34,47 @@ defmodule FlyDashWeb.DashboardLive do
   def handle_event("search", %{"term" => term}, socket) do
     # Implement search/filter functionality
     {:noreply, assign(socket, :search_term, term)}
+  end
+
+  @impl true
+  def handle_info(%{topic: "machine_updates", payload: update}, socket) do
+    # TODO: remove
+    IO.puts("\n\nMACHINE UPDATES #{update}\n\n")
+    # Handle real-time machine updates
+    updated_regions = update_regions(socket.assigns.regions, update)
+    {:noreply, assign(socket, :regions, updated_regions)}
+  end
+
+  @impl true
+  def handle_info({:dashboard_data_updated, data}, socket) do
+    %{"region_code" => region_code, "key" => key} = data
+
+    # Directly transform the regions list - no update_in needed
+    updated_regions =
+      Enum.map(socket.assigns.regions, fn region ->
+        if region["code"] == region_code do
+          updated_machines =
+            Enum.map(region["machines"], fn machine ->
+              if machine["key"] == key do
+                %{
+                  machine
+                  | "cores_allocated" => data["cores_allocated"],
+                    "memory_allocated" => data["memory_allocated"],
+                    "status" => data["status"],
+                    "updated_at" => data["updated_at"]
+                }
+              else
+                machine
+              end
+            end)
+
+          %{region | "machines" => updated_machines}
+        else
+          region
+        end
+      end)
+
+    {:noreply, assign(socket, :regions, updated_regions)}
   end
 
   defp update_regions(_regions, _machine_update) do

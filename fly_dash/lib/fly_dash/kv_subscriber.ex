@@ -1,6 +1,11 @@
 defmodule FlyDash.KvSubscriber do
   use GenServer
 
+  require Logger
+  import FlyDash.Utility
+
+  alias Phoenix.PubSub
+
   @fly_kv_node :"fly_kv@127.0.0.1"
   @topic "machine:changes"
 
@@ -54,24 +59,40 @@ defmodule FlyDash.KvSubscriber do
   end
 
   def handle_info(
-        %{event: _event, region_code: region_code, machine_address: machine_address} = message,
+        %{
+          event: :update,
+          region_code: region_code,
+          machine_address: machine_address,
+          metadata: metadata
+        } = message,
         state
       ) do
-    IO.inspect(message, label: "\n\nReceived KV change\n\n")
-    handle_update(region_code, machine_address, message.metadata)
+    Logger.info(
+      "#{message.timestamp} [update] #{region_code} #{machine_address} #{metadata.memory_allocated} #{metadata.cores_allocated}"
+    )
+
+    broadcast_update(message)
     {:noreply, state}
   end
 
-  def handle_info(msg, state) do
-    # TODO remove function
-    IO.inspect(msg, label: "\n\nHANDLE_INFO UNEXPECTED MSG\n\n")
+  def handle_info(message, state) do
+    # Clear mailbox to prevent memory leak
+    Logger.warning("Unexpeected message #{inspect(message)}")
     {:noreply, state}
   end
 
-  defp handle_update(region_code, machine_address, metadata) do
-    # TODO: update LiveView
-    IO.puts("Update: region #{region_code}, machine #{machine_address}")
-    IO.inspect(metadata, label: "Metadata")
-    # Your update handling logic here
+  defp broadcast_update(%{region_code: region_code, machine_address: address, metadata: metadata}) do
+    message =
+      %{
+        "key" => compose_key(region_code, address),
+        "region_code" => region_code,
+        "address" => address,
+        "memory_allocated" => metadata.memory_allocated,
+        "cores_allocated" => metadata.cores_allocated,
+        "status" => "updating",
+        "updated_at" => to_string(metadata.updated_at)
+      }
+
+    PubSub.broadcast(Flylight.PubSub, "dashboard_updates", {:dashboard_data_updated, message})
   end
 end

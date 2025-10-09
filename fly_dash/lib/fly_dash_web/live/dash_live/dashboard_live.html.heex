@@ -42,6 +42,7 @@
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <div
               :for={machine <- @selected_region["machines"]}
+              key={machine["key"]}
               class="bg-[#252631] p-4 rounded border border-[#2D2E36]"
             >
               <div class="flex justify-between items-center mb-2">
