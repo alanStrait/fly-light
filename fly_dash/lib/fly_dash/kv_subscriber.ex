@@ -1,10 +1,8 @@
 defmodule FlyDash.KvSubscriber do
-  use GenServer
-
-  require Logger
-  import FlyDash.Utility
-
   alias Phoenix.PubSub
+  import FlyDash.Utility
+  require Logger
+  use GenServer
 
   @fly_kv_node :"fly_kv@127.0.0.1"
   @topic "machine:changes"
