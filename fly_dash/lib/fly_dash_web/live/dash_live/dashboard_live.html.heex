@@ -34,65 +34,65 @@
     
 <!-- Main Content - Machines View -->
     <div class="lg:col-span-3">
-        <%= case @selected_region_code do %>
-          <% nil -> %>
-            <!-- Welcome/Empty state -->
-            <div class="bg-[#1A1B23] rounded-lg border border-[#2D2E36] p-8 text-center">
-              <div class="text-[#8B5CF6] text-6極 mb-4">🚀</div>
-              <h2 class="text-xl font-semibold mb-2">Welcome to Fly Dash</h2>
-              <p class="text-[#A0A0A0]">Select a region to view its machines</p>
-            </div>
-          <% region_code -> %>
-            <%= case Enum.find(@regions, &(&1["code"] == region_code)) do %>
-              <% nil -> %>
-                <p>Region {region_code} not found</p>
-              <% current_region -> %>
-                <div class="bg-[#1A1B23] rounded-lg border border-[#2D2E36] p-4">
-                  <h2 class="text-xl font-semibold text-[#8B5CF6] mb-4">
-                    Machines in {current_region["code"]}
-                  </h2>
-                  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    <div
-                      :for={machine <- current_region["machines"]}
-                      key={machine["key"]}
-                      class="bg-[#252631] p-4 rounded border border-[#2D2E36]"
-                    >
-                      <div class="flex justify-between items-center mb-2">
-                        <span class="font-medium">{extract_name(machine["address"])}</span>
-                        <span class={machine_status_color(machine["status"])}>
-                          {machine["status"]}
-                        </span>
-                      </div>
-                      <div class="flex justify-between items-center mb-2">
-                        <span class="font-medium">CPU: {machine["cores_total"]} cores</span>
-                        <span class={machine_status_color(machine["status"])}>
-                          {machine["cores_total"] - machine["cores_allocated"]}
-                        </span>
-                      </div>
-                      <div class="flex justify-between items-center mb-2">
-                        <span class="cont-medium">
-                          RAM: {memory_gb(machine["memory_total"])} GB
-                        </span>
-                        <span class={machine_status_color(machine["status"])}>
-                          {memory_gb(machine["memory_total"] - machine["memory_allocated"])}
-                        </span>
-                      </div>
-                      <div class="text-sm space-y-1">
-                        <div class="text-xs text-[#A0A0A0]">
-                          Updated: {formatted_time(machine["updated_at"])}
-                        </div>
+      <%= case @selected_region_code do %>
+        <% nil -> %>
+          <!-- Welcome/Empty state -->
+          <div class="bg-[#1A1B23] rounded-lg border border-[#2D2E36] p-8 text-center">
+            <div class="text-[#8B5CF6] text-6極 mb-4">🚀</div>
+            <h2 class="text-xl font-semibold mb-2">Welcome to Fly Dash</h2>
+            <p class="text-[#A0A0A0]">Select a region to view its machines</p>
+          </div>
+        <% region_code -> %>
+          <%= case Enum.find(@regions, &(&1["code"] == region_code)) do %>
+            <% nil -> %>
+              <p>Region {region_code} not found</p>
+            <% current_region -> %>
+              <div class="bg-[#1A1B23] rounded-lg border border-[#2D2E36] p-4">
+                <h2 class="text-xl font-semibold text-[#8B5CF6] mb-4">
+                  Machines in {current_region["code"]}
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <div
+                    :for={machine <- current_region["machines"]}
+                    key={machine["key"]}
+                    class="bg-[#252631] p-4 rounded border border-[#2D2E36]"
+                  >
+                    <div class="flex justify-between items-center mb-2">
+                      <span class="font-medium">{extract_name(machine["address"])}</span>
+                      <span class={machine_status_color(machine["status"])}>
+                        {machine["status"]}
+                      </span>
+                    </div>
+                    <div class="flex justify-between items-center mb-2">
+                      <span class="font-medium">CPU: {machine["cores_total"]} cores</span>
+                      <span class={machine_status_color(machine["status"])}>
+                        {machine["cores_total"] - machine["cores_allocated"]}
+                      </span>
+                    </div>
+                    <div class="flex justify-between items-center mb-2">
+                      <span class="cont-medium">
+                        RAM: {memory_gb(machine["memory_total"])} GB
+                      </span>
+                      <span class={machine_status_color(machine["status"])}>
+                        {memory_gb(machine["memory_total"] - machine["memory_allocated"])}
+                      </span>
+                    </div>
+                    <div class="text-sm space-y-1">
+                      <div class="text-xs text-[#A0A0A0]">
+                        Updated: {formatted_time(machine["updated_at"])}
                       </div>
                     </div>
                   </div>
                 </div>
-            <% end %>
-        <% end %>
-        <!-- Welcome/Empty state -->
-        <div class="bg-[#1A1B23] rounded-lg border border-[#2D2E36] p-8 text-center">
-          <div class="text-[#8B5CF6] text-6xl mb-4">🚀</div>
-          <h2 class="text-xl font-semibold mb-2">Welcome to Fly Dash</h2>
-          <p class="text-[#A0A0A0]">Select a region to view its machines</p>
-        </div>
+              </div>
+          <% end %>
+      <% end %>
+      <!-- Welcome/Empty state -->
+      <div class="bg-[#1A1B23] rounded-lg border border-[#2D2E36] p-8 text-center">
+        <div class="text-[#8B5CF6] text-6xl mb-4">🚀</div>
+        <h2 class="text-xl font-semibold mb-2">Welcome to Fly Dash</h2>
+        <p class="text-[#A0A0A0]">Select a region to view its machines</p>
+      </div>
     </div>
   </div>
 </div>
