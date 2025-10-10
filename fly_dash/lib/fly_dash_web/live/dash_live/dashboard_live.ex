@@ -8,13 +8,11 @@ defmodule FlyDashWeb.DashboardLive do
   def mount(_params, _session, socket) do
     if connected?(socket), do: PubSub.subscribe(Flylight.PubSub, "dashboard_updates")
 
-    # regions = Regions.list_regions_with_machines()
     regions = FlyDash.fetch_regions()
 
     socket =
       socket
       |> assign(:regions, regions)
-      # |> assign(:selected_region, nil)
       |> assign(:selected_region_code, nil)
 
     {:ok, socket}
@@ -22,10 +20,6 @@ defmodule FlyDashWeb.DashboardLive do
 
   @impl true
   def handle_event("select_region", %{"region-id" => region_code}, socket) do
-    # Handle region selection for detail view
-    region = Enum.find(socket.assigns.regions, &(&1["code"] == region_code))
-    IO.inspect(region, label: "\nEGION\n")
-    IO.inspect(region_code, label: "\nEGION ID\t")
     {:noreply, assign(socket, :selected_region_code, region_code)}
   end
 
@@ -33,7 +27,10 @@ defmodule FlyDashWeb.DashboardLive do
   def handle_info({:dashboard_data_updated, data}, socket) do
     %{"region_code" => region_code, "key" => key} = data
 
-    # Directly transform the regions list - no update_in needed
+    # Directly transform the regions list - no update_in needed.
+    # `update_in`, and similar, were not being noticed by assigns
+    # change tracking, so this was solved by tracking region_code
+    # and noticing the change in HEEX.
     updated_regions =
       Enum.map(socket.assigns.regions, fn region ->
         if region["code"] == region_code do
@@ -59,25 +56,6 @@ defmodule FlyDashWeb.DashboardLive do
       end)
 
     {:noreply, assign(socket, :regions, updated_regions)}
-  end
-
-  defp get_selected_region(socket) do
-    case socket.assigns do
-      %{selected_region_code: code} when not is_nil(code) ->
-        Enum.find(socket.assigns.regions, &(&1["code"] == code))
-
-      _ ->
-        nil
-    end
-
-    if socket.assigns.selected_region_code do
-      Enum.find(socket.assigns.regions, &(&1["code"] == socket.assigns.selected_region_code))
-    end
-  end
-
-  defp update_regions(_regions, _machine_update) do
-    # Logic to update specific machine status across regions
-    # This maintains immutability while allowing real-time updates
   end
 
   defp status_color(status) do
