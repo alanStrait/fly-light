@@ -54,3 +54,12 @@ Brew versus Cargo.  `rustup` had already been installed via `Cargo`, `~/.cargo/b
   - `dependi` (replaces `crates`)
   - `CodeLLDB`
   - `Error Lens`
+
+## Misc, in case missed above:
+- ~/.cargo/bin/rustup --version 
+- ~/.cargo/bin/cargo --version 
+- ~/.cargo/bin/rustc --version
+- `cargo --version`
+- `cargo new fly-proxy`
+- `clear; cargo run`
+- `clear; cargo build`
