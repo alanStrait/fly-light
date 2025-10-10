@@ -6,10 +6,7 @@ defmodule FlyDashWeb.DashboardLive do
 
   @impl true
   def mount(_params, _session, socket) do
-    if connected?(socket) do
-      FlyDashWeb.Endpoint.subscribe("machine_updates")
-      PubSub.subscribe(Flylight.PubSub, "dashboard_updates")
-    end
+    if connected?(socket), do: PubSub.subscribe(Flylight.PubSub, "dashboard_updates")
 
     # regions = Regions.list_regions_with_machines()
     regions = FlyDash.fetch_regions()
@@ -17,32 +14,19 @@ defmodule FlyDashWeb.DashboardLive do
     socket =
       socket
       |> assign(:regions, regions)
-      |> assign(:selected_region, nil)
-      |> assign(:search_term, "")
+      # |> assign(:selected_region, nil)
+      |> assign(:selected_region_code, nil)
 
     {:ok, socket}
   end
 
   @impl true
-  def handle_event("select_region", %{"region-id" => region_id}, socket) do
+  def handle_event("select_region", %{"region-id" => region_code}, socket) do
     # Handle region selection for detail view
-    region = Enum.find(socket.assigns.regions, &(&1["code"] == region_id))
-    {:noreply, assign(socket, :selected_region, region)}
-  end
-
-  @impl true
-  def handle_event("search", %{"term" => term}, socket) do
-    # Implement search/filter functionality
-    {:noreply, assign(socket, :search_term, term)}
-  end
-
-  @impl true
-  def handle_info(%{topic: "machine_updates", payload: update}, socket) do
-    # TODO: remove
-    IO.puts("\n\nMACHINE UPDATES #{update}\n\n")
-    # Handle real-time machine updates
-    updated_regions = update_regions(socket.assigns.regions, update)
-    {:noreply, assign(socket, :regions, updated_regions)}
+    region = Enum.find(socket.assigns.regions, &(&1["code"] == region_code))
+    IO.inspect(region, label: "\nEGION\n")
+    IO.inspect(region_code, label: "\nEGION ID\t")
+    {:noreply, assign(socket, :selected_region_code, region_code)}
   end
 
   @impl true
@@ -75,6 +59,20 @@ defmodule FlyDashWeb.DashboardLive do
       end)
 
     {:noreply, assign(socket, :regions, updated_regions)}
+  end
+
+  defp get_selected_region(socket) do
+    case socket.assigns do
+      %{selected_region_code: code} when not is_nil(code) ->
+        Enum.find(socket.assigns.regions, &(&1["code"] == code))
+
+      _ ->
+        nil
+    end
+
+    if socket.assigns.selected_region_code do
+      Enum.find(socket.assigns.regions, &(&1["code"] == socket.assigns.selected_region_code))
+    end
   end
 
   defp update_regions(_regions, _machine_update) do
