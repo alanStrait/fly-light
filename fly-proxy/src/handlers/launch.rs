@@ -14,7 +14,7 @@ pub async fn launch_handler(params: LaunchParams) -> Result<impl Reply, Rejectio
     println!("Received launch request: {:?}", params);
 
     // hardcoded valid range check to protect fly-global service from invalid requests
-    let allowed_regions = ["DEN", "ARN", "BOM", "GDL", "GRU", "HKG", "JNB", "MEL", "MRT", "SIN"];
+    let allowed_regions = ["DEN", "ARN", "BOM", "GDL", "GRU", "HKG", "JNB", "MEL", "NRT", "SIN"];
     if !allowed_regions.contains(&&*params.vm_region) {
         return Ok(warp::reply::with_status(
             format!("Invalid region: '{}'.  Must be one of: {:?}", params.vm_region, allowed_regions),
