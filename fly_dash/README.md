@@ -1,18 +1,11 @@
 # FlyDash
 
-To start your Phoenix server:
+FlyDash shares a PubSub topic with FlyKv, requiring name and cookie to be set on start.
 
-* Run `mix setup` to install and setup dependencies
-* Start Phoenix endpoint with `mix phx.server` or inside IEx with `iex -S mix phx.server`
+`iex --name fly-dash@127.0.0.1 --cookie mysharedcookie -S mix phx.server`
 
-Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
+## Mix Command to Create
 
-Ready to run in production? Please [check our deployment guides](https://hexdocs.pm/phoenix/deployment.html).
+FlyDash is a LiveView SPA, therefore all of the defaults were taken when generating this project.  E.g.,
 
-## Learn more
-
-* Official website: https://www.phoenixframework.org/
-* Guides: https://hexdocs.pm/phoenix/overview.html
-* Docs: https://hexdocs.pm/phoenix
-* Forum: https://elixirforum.com/c/phoenix-forum
-* Source: https://github.com/phoenixframework/phoenix
+`mix phx.new fly-dash`
