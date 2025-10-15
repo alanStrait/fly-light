@@ -1,7 +1,7 @@
 # Flylight
 
 ## TL;DR
-For those impatient to know the content of the reposistory, here is a summary description of the `fly-light` monorepo.
+A summary description of the `fly-light` monorepo.
 
 ### fly-light as Monorepo
 
@@ -14,7 +14,6 @@ For those impatient to know the content of the reposistory, here is a summary de
   - `fly_global`, a mix project providing business orchestration services to simulate server resources.
   - `fly_kv`, a mix project providing an ephemeral key-value store in the spirit of Hashicorp's Consul key-value store.
   - `fly_dash`, a mix project providing Phoenix LiveView dashboard view of regions and machines.
-
 
 ## Learning Modern Distributed System Skills by Emulating fly.io
 
