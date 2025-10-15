@@ -10,8 +10,6 @@ defmodule FlyGlobal.FlyKv do
     |> Map.get("data")
   end
 
-  # TODO: move to config.exs
-  @num_candidates 5
   def fetch_machine_candidates(region_code, memory_gb, cores, num_candidates) do
     Client.fetch_machine_candidates(region_code, memory_gb, cores, num_candidates)
     |> Map.get("data")
