@@ -1,9 +1,26 @@
 # Flylight
+
+## TL;DR
+For those impatient to know the content of the reposistory, here is a summary description of the `fly-light` monorepo.
+
+### fly-light as Monorepo
+
+-`fly-light` is a monorepo hosting multiple collaborating projects.
+  - `ex_scratch`, a mix project to work out Elixir related questions.
+  - `go-scratch`, a Go project to work out Go related questions.
+  - `rust-scratch`, a Rust project to work out Rust related questions.
+  - `fly-cli`, a Go CLI project.
+  - `fly-proxy`, a Rust project providing proxy services.
+  - `fly_global`, a mix project providing business orchestration services to simulate server resources.
+  - `fly_kv`, a mix project providing an ephemeral key-value store in the spirit of Hashicorp's Consul key-value store.
+  - `fly_dash`, a mix project providing Phoenix LiveView dashboard view of regions and machines.
+
+
 ## Learning Modern Distributed System Skills by Emulating fly.io
 
 In this era of AI-generated code, including fly.io's `Phoenix.new`, it is a relevant question to ask: as a fullstack engineer, what should I know?  
 
-Flylight asserts that distributed web architecture by way of key web languages Go, Rust, and Elixir are a good place to begin--these languages are key to the success of fly.io, an important player in the Cloud for quickly and easily enabling global services.
+Flylight asserts that distributed web architecture by way of key web languages Go, Rust, and Elixir are a good place to begin--these languages are key to the success of fly.io, an important player in the Cloud for quickly and easily enabling global services--from the command line.
 
 Initially, this effort will focus on getting acquainted with Go and Rust and growing my understanding of Elixir, especially as it relates to OTP and LiveView.
 
@@ -16,20 +33,20 @@ Initially, this effort will focus on getting acquainted with Go and Rust and gro
 Flylight creates a single thread through this larger ecosystem, conveniently bending its shape to suit my desires and avoiding the hard stuff for now while getting acquainted with Go and Rust.
 
 ## Flylight Exercise
-fly.io leverages **Go**, and **Rust**, and **Elixir** programming languages extensively.  For purposes of this exercise, applications built with these languages are depicted in the following diagram.
+fly.io leverages **Go**, **Rust**, and **Elixir** programming languages extensively.  For purposes of this exercise, applications built with these languages are depicted in the following diagram.
 
 ![flylight-project](./images/flylight_project.png)
 
 This simplified topology is my mental model for the operational services that enable fly.io.  While it may be incorrect, it serves my purposes to learn something useful about a modern distributed architecture.  
 
 The lines represent communication between applications.  
-- Solid lines represent application communication that is implemented initially: as an architectural thread.
+- Solid lines represent application communication that is implemented here as an architectural thread.
 - Broken lines are in the backlog.
 
 ## Flylight Applications
 
 ### fly-cli
-**fly-cli** is an initial `Go` implementation of a CLI.  This is the primary application that lives in the client or subscriber's world and its' name had to changed so that it would not conflict with the fly.io `flyctl` application installed locally.  **This implementation is a first cut at using Go and does not represent the fly.io implementation**.  
+**fly-cli** is a `Go` implementation of a CLI.  This is the primary application that lives in the client or subscriber's world and its' name had to be changed so that it would not conflict with the fly.io `flyctl` application installed locally.  **This implementation is a first cut at using Go and does not represent the fly.io implementation**.  
 
 Currently there are two commands that can be issued from `fly-cli`, 
 - `./fly-cli regions` 
@@ -60,7 +77,7 @@ In the **backlog**, for learning sake, the proxy is candidate to provide the fol
 `fly-global` is effectively an orchestration service of collaborating processes, made resilient in a dynamic supervisor tree, allocating resources from infrastructure on a region-machine basis based on requests from `fly-cli`.
 
 ### fly-kv
-**fly-kv** is the placeholder for the Hashicorp Consul key-value store that is specially designed to track device status.  In this case it is an OTP GenServer called `Store` that bootstraps a data-structure of regions and their machines from a CSV file.  `fly-kv` serves as the heart of the architecture, providing data services that include finding machines for a region that likely have availability based on allocation request, shuffling the result so that machines are allocated as randomly as possible.  These candidates are asked for from the `fly-global` orchestration service, who then asks each identified `MachineD` whether it can host the requested VM until one agrees.  The resulting allocation is asynchronously fed back to the `fly-kv` application by way of `FlyD`.  
+**fly-kv** is the placeholder for the Hashicorp Consul key-value store that is specially designed to track device status.  In this case it is an OTP GenServer called `Store` that bootstraps a data-structure of regions and their machines from a CSV file.  `fly-kv` serves as the heart of the architecture, providing data services that include finding machines for a region that likely have availability based on allocation request, shuffling the result so that machines are allocated as randomly as possible.  These candidates are asked for from the `fly-global` orchestration service, who then asks each identified `MachineD` whether it can host the requested VM.  This continues until a MachineD is found to be available.  The resulting allocation is asynchronously fed back to the `fly-kv` application by way of `FlyD`.  
 
 ### fly-dash
 **fly-dash** is a LiveView SPA that lists all of the regions and displays machines in the region when the region is selected.  The machines that are allocated indicate this by changing the status of the machine and showing machine resources in a different color, providing touch-less visual indicators of machine allocation. The synchronization between `fly-kv` and `fly-dash` is performed over distributed PubSub enabled by Phoenix's default `Phoenix.PubSub.PG2` process group clustering enabled by Erlang.
@@ -88,17 +105,3 @@ Key points to make about `launch and allocate` include:
 - `FlyD` asynchronously processes all of the allocations for the machine by conflating them into a single request that is used to update `fly-kv`.
 - The `kv-store`, called `Store` in the code, asynchrously publishes the change to a PubSub topic.
 - The PubSub topic is updated to the LiveView SPA for dashboard display.
-
-### fly-light as Monorepo
-
-`fly-light` is a monorepo hosting multiple collaborating projects.
-- `ex_scratch`, a mix project to work out Elixir related questions.
-- `go-scratch`, a Go project to work out Go related questions.
-- `rust-scratch`, a Rust proejct to work out Rust related questions.
-- `fly-cli`, a Go CLI project.
-- `fly-proxy`, a Rust project providing proxy services.
-- `fly_global`, an mix project providing business orchestration services to simulate server resources.
-- `fly_kv`, a mix project providing an ephemeral key-value store in the spirit of Hashicorp's Consul key-value store.
-- `fly_dash`, a mix project providing Phoenix LiveView dashboard view of regions and machines.
-
-
