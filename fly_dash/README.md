@@ -2,7 +2,7 @@
 
 FlyDash shares a PubSub topic with FlyKv, requiring name and cookie to be set on start.
 
-`iex --name fly-dash@127.0.0.1 --cookie mysharedcookie -S mix phx.server`
+`iex --name fly_dash@127.0.0.1 --cookie mysharedcookie -S mix phx.server`
 
 ## Mix Command to Create
 

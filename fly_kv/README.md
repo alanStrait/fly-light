@@ -6,7 +6,7 @@ FlyKv provides RESTful access to a key-value store that tracks machine informati
 
 PubSub is used for distributed communication requring `name` and `cookie` to be set on start.
 
-`iex --name fly-kv@127.0.0.1 --cookie mysharedcookie -S mix phx.server` 
+`iex --name fly_kv@127.0.0.1 --cookie mysharedcookie -S mix phx.server` 
 
 As a pure API project, these options minimized the code that has been generated.
 
