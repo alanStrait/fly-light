@@ -269,21 +269,8 @@ func requestVMAllocation() error {
 	if resp.StatusCode != http.StatusOK {
 		return fmt.Errorf("API returned status %d: %s\nResponse: %s",
 			resp.StatusCode, resp.Status, string(body))
-	}
-
-	// Parse response
-	var allocationResp AllocationResponse
-	if err := json.Unmarshal(body, &allocationResp); err != nil {
-		return fmt.Errorf("failed to parse response: %w\nRaw response: %s", err, string(body))
-	}
-
-	// Handle response
-	if allocationResp.Data.Success {
-		fmt.Printf("✅ Allocation successful!\n")
-		fmt.Printf("   Machine ID: %s\n", allocationResp.Data.MachineID)
-		fmt.Printf("   Message: %s\n", allocationResp.Data.Message)
 	} else {
-		return fmt.Errorf("allocation failed: %s", allocationResp.Data.Error)
+		fmt.Printf("Allocation successful: %d \n", resp.StatusCode)
 	}
 
 	return nil
