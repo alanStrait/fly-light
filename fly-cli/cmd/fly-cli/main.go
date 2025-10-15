@@ -58,7 +58,6 @@ type APIResponse struct {
 }
 
 var (
-	// apiURL = flag.String("api", "http://localhost:4010/fly-kv/regions", "API endpoint URL")
 	apiBase    = flag.String("api-base", "http://127.0.0.1:3030/", "Base API URL")
 	apiURL     = flag.String("api", "http://127.0.0.1:3030/regions", "API endpoint URL")
 	filter     = flag.String("filter", "", "Filter by status: online, offline, maintenance")
@@ -71,14 +70,51 @@ var (
 )
 
 func main() {
+	flag.Usage = usage
+
 	flag.Parse()
+
+	if len(flag.Args()) == 0 && !hasNonDefaultFlags() {
+		flag.Usage()
+		return
+	}
 
 	if err := run(); err != nil {
 		log.Fatalf("Error: %v", err)
 	}
 }
 
+func usage() {
+	fmt.Fprintf(os.Stderr, "Usage: %s [command] [options]\n\n", os.Args[0])
+	fmt.Fprintf(os.Stderr, "Commands:\n")
+	fmt.Fprintf(os.Stderr, "	regions		List available regions\n")
+	fmt.Fprintf(os.Stderr, "	launch		Start VM in a region\n")
+	fmt.Fprintf(os.Stderr, "	\nOptions:\n")
+	flag.PrintDefaults()
+}
+
+func hasNonDefaultFlags() bool {
+	return *vmRegion != "" || *vmMemory > 0 || *vmCores > 0 || *filter != "" || *sortBy != "code" || *jsonOutput
+}
+
 func run() error {
+	if len(flag.Args()) > 0 {
+		command := flag.Arg(0)
+		switch command {
+		case "regions":
+			return handleRegionsCommand()
+
+		case "launch":
+			return handleLaunchCommand()
+
+		default:
+			return fmt.Errorf("unknown command: %s", command)
+		}
+	}
+	return nil
+}
+
+func handleRegionsCommand() error {
 	regions, err := fetchRegions()
 	if err != nil {
 		return err
@@ -97,20 +133,23 @@ func run() error {
 		return outputJSON(regions)
 	}
 
-	// Request VM
+	return outputTable(regions)
+}
+
+func handleLaunchCommand() error {
 	if *vmRegion != "" || *vmMemory > 0 || *vmCores > 0 {
 		if err := validateVMRequest(); err != nil {
 			log.Fatalf("Error: %v", err)
 		}
-		fmt.Printf("Requesting VM: Region=%s, MemoryGB=%dGB, Cores=%d\n\n\n",
-			*vmRegion, *vmMemory, *vmCores)
 
 		if err := requestVMAllocation(); err != nil {
-			log.Fatalf("Allocation faileld: %v", err)
+			log.Fatalf("Allocation failed: %v", err)
 		}
+	} else {
+		fmt.Println("DEBUG: No VM flags detected")
 	}
 
-	return outputTable(regions)
+	return nil
 }
 
 func fetchRegions() ([]Region, error) {
@@ -182,8 +221,6 @@ func validateVMRequest() error {
 }
 
 func requestVMAllocation() error {
-	fmt.Println("\nrequestVMAllocation")
-
 	// Build the URL
 	baseURL, err := url.Parse(*apiBase)
 	if err != nil {
