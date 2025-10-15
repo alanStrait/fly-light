@@ -15,6 +15,23 @@ A summary description of the `fly-light` monorepo.
   - `fly_kv`, a mix project providing an ephemeral key-value store in the spirit of Hashicorp's Consul key-value store.
   - `fly_dash`, a mix project providing Phoenix LiveView dashboard view of regions and machines.
 
+### Up and Running
+From `/fly-light`, visit each of these projects and issue the following commands.
+- FlyKv
+  - `cd fly_kv; iex --name fly_kv@127.0.0.1 --cookie mysharedcookie -S mix phx.server`
+- FlyProxy
+  - `cd fly-proxy; cargo build; cargo run`
+- FlyGlobal
+  - `cd fly_global; iex -S mix phx.server`
+- FlyDash
+  - `cd fly_dash; iex --name fly_dash@127.0.0.1 --cookie mysharedcookie -S mix phx.server`
+  - Visit: http://localhost:4000/flylight 
+- FlyCli
+  - `cd fly-cli; make build`
+    - Usage:        `./fly-cli`
+    - List regions: `./fly-cli regions`
+    - Launch VM:    `./fly-cli --vm-memory 8 --vm-cores 4 --vm-region SIN launch`
+
 ## Learning Modern Distributed System Skills by Emulating fly.io
 
 In this era of AI-generated code, including fly.io's `Phoenix.new`, it is a relevant question to ask: as a fullstack engineer, what should I know?  
