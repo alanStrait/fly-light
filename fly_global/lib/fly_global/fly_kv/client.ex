@@ -20,7 +20,7 @@ defmodule FlyGlobal.FlyKv.Client do
     query_params = [memory_gb: memory_gb, cores: cores, num_candidates: num_candidates]
     case Req.get(candidate_url(region_code), params: query_params) do
       {:ok, response} ->
-        response.body |> IO.inspect(label: "\nBODY\n")
+        response.body
 
       {:error, reason} ->
         raise(reason)

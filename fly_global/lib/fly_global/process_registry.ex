@@ -11,12 +11,10 @@ defmodule FlyGlobal.ProcessRegistry do
   end
 
   def via_tuple(module, key) do
-    IO.inspect(__MODULE__, label: "\nMODULE\n")
     {:via, Registry, {module, key}}
   end
 
   def via_tuple(key) do
-    IO.inspect(__MODULE__, label: "\nMODULE\n")
     {:via, Registry, {__MODULE__, key}}
   end
 

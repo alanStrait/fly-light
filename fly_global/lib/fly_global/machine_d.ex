@@ -53,7 +53,6 @@ defmodule FlyGlobal.MachineD do
   # Server callbacks
   @impl true
   def handle_call({:allocate_vm, memory_gb, cores}, _from, state) do
-    IO.inspect(state, label: "\nSTATE BEFORE\n")
     memory = memory_gb * 1_000_000_000
     {result, state_new} =
       if (state.memory_available >= memory && state.cores_available >= cores) do
@@ -71,8 +70,6 @@ defmodule FlyGlobal.MachineD do
           %__MODULE__{ state | status: "unavailable" }
         {:unavailable, state_prime}
       end
-    IO.inspect(state, label: "\nHANDLE_CALL\n")
-    IO.puts("memory_gb #{memory_gb} cores #{cores}")
 
     {:reply, {result, state_new}, state_new}
   end
@@ -83,8 +80,7 @@ defmodule FlyGlobal.MachineD do
   end
 
   @impl true
-  def handle_continue({region_code, machine}, state) do
-    IO.puts("\nstate\t #{inspect state}")
+  def handle_continue({region_code, machine}, _state) do
     machine_d =
       %__MODULE__{
         region_code: region_code,
@@ -97,8 +93,6 @@ defmodule FlyGlobal.MachineD do
         cores_available: machine["cores_total"] - machine["cores_allocated"],
         status: machine["status"]
       }
-
-    IO.inspect(machine_d, label: "\nCONTD\n")
 
     {:noreply, machine_d}
   end

@@ -26,7 +26,6 @@ defmodule FlyGlobal do
             {:cont, acc}
         end
       end)
-      |> IO.inspect(label: "\nRESULT\n")
 
     # Return machine summary
     result

@@ -1,10 +1,11 @@
 defmodule FlyGlobal.Infrastructure do
-  use GenServer
-
   @moduledoc """
   Infrastucture is a `GenServer` that sets up `MachineeD` and `FlyD`
   GenServers using FlyKv data describing available machines by region.
   """
+
+  require Logger
+  use GenServer
 
   # Client API
   def start_link(default) do
@@ -12,14 +13,11 @@ defmodule FlyGlobal.Infrastructure do
   end
 
   # Server callbacks
-  def init(init_arg) do
-    IO.puts("Infrastructure init arg #{inspect init_arg}")
-    {:ok, %{}, {:continue, %{init: :state}}}
+  def init(_arg) do
+    {:ok, %{}, {:continue, nil}}
   end
 
-  def handle_continue(continue_arg, state) do
-    IO.puts("\nhandle_continue arg #{inspect continue_arg}\n")
-    IO.puts("\n\t state #{inspect state}\n")
+  def handle_continue(_continue_arg, state) do
     regions =
       FlyGlobal.fetch_regions()
       |> Enum.filter(fn region -> length(region["machines"]) > 0 end)
@@ -43,7 +41,7 @@ defmodule FlyGlobal.Infrastructure do
           {:ok, _pid} -> :ok
 
           error ->
-            IO.inspect(error, label: "\nERROR starting process\n")
+            Logger.warning("\nERROR starting process #{inspect error}\n")
             error
         end
       end)

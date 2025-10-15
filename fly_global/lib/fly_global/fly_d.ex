@@ -3,6 +3,7 @@ defmodule FlyGlobal.FlyD do
 
   alias FlyGlobal.ProcessRegistry
   alias FlyGlobal.FlyKv.Client
+  require Logger
 
   defstruct [
     :region_code,
@@ -55,8 +56,6 @@ defmodule FlyGlobal.FlyD do
 
   @impl true
   def handle_cast({:register_change, memory_gb, cores, status}, state) do
-    IO.puts("\nHANDLE_CAST\n")
-
     fly_d =
       %__MODULE__{
         region_code: state.region_code,
@@ -68,7 +67,6 @@ defmodule FlyGlobal.FlyD do
 
     state_prime =
       update_in(state[:queue], fn queue -> [fly_d | queue] end)
-      |> IO.inspect(label: "\nHERE\n")
 
     {:noreply, state_prime}
   end
@@ -88,7 +86,6 @@ defmodule FlyGlobal.FlyD do
         queue: [],
         loop_ref: nil
       }
-      |> IO.inspect(label: "\nCONTD\n")
 
     loop_ref = Process.send_after(self(), :push_flyd_queue_to_store, @loop_interval)
 
@@ -108,19 +105,18 @@ defmodule FlyGlobal.FlyD do
         [] -> state
 
         flyd ->
-          IO.inspect(flyd, label: "\nCONFLATED FLYDs\n")
           case Client.patch_machine(state.region_code, state.address, flyd) do
 
             {:ok, body} ->
-              IO.puts("Successfully patched #{state.region_code} #{state.address} with #{inspect body}")
+              Logger.info("Successfully patched #{state.region_code} #{state.address} with #{inspect body}")
               %{state | queue: []}
 
             {:error, reason} ->
-              IO.puts("Error Patching #{state.region_code} #{state.address} due to #{inspect reason}")
+              Logger.info("Error Patching #{state.region_code} #{state.address} due to #{inspect reason}")
               state
 
-            other ->
-              IO.inspect(other, label: "\nOTHER\n")
+            %{"message" => message} ->
+              Logger.info("push_queue message: #{inspect message}")
               %{state | queue: []}
 
           end

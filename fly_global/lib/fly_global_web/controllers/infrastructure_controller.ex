@@ -7,7 +7,6 @@ defmodule FlyGlobalWeb.InfrastructureController do
 
   def allocate(conn, %{"region_code" => region_code, "memory_gb" => memory_gb, "cores" => cores}) do
     machine = FlyGlobal.allocate(region_code, memory_gb, cores, 5)
-    IO.inspect(machine, label: "\nALLOCATED MACHINE\n")
 
     conn
     |> render(:machine, machine: machine)
