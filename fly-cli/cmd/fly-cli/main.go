@@ -59,16 +59,15 @@ type APIResponse struct {
 
 var (
 	// apiURL = flag.String("api", "http://localhost:4010/fly-kv/regions", "API endpoint URL")
+	apiBase    = flag.String("api-base", "http://127.0.0.1:3030/", "Base API URL")
 	apiURL     = flag.String("api", "http://127.0.0.1:3030/regions", "API endpoint URL")
-	verbose    = flag.Bool("verbose", false, "Enable verbose output")
+	filter     = flag.String("filter", "", "Filter by status: online, offline, maintenance")
 	jsonOutput = flag.Bool("json", false, "Output in JSON format")
 	sortBy     = flag.String("sort", "code", "Sort by: code, location, status")
-	filter     = flag.String("filter", "", "Filter by status: online, offline, maintenance")
-	vmRegion   = flag.String("vm-region", "", "Region for VM allocation")
-	vmMemory   = flag.Int("vm-memory", 0, "Memory in GB for VM")
+	verbose    = flag.Bool("verbose", false, "Enable verbose output")
 	vmCores    = flag.Int("vm-cores", 0, "Number of CPU cores for VM")
-	// apiBase    = flag.String("api-base", "http://localhost:4010/", "Base API URL")
-	apiBase = flag.String("api-base", "http://127.0.0.1:3030/", "Base API URL")
+	vmMemory   = flag.Int("vm-memory", 0, "Memory in GB for VM")
+	vmRegion   = flag.String("vm-region", "", "Region for VM allocation")
 )
 
 func main() {
