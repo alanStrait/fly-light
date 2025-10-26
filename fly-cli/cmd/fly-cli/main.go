@@ -153,22 +153,42 @@ func handleLaunchCommand() error {
 }
 
 func fetchRegions() ([]Region, error) {
-	resp, err := http.Get(*apiURL)
-	if err != nil {
-		return nil, fmt.Errorf("failed to fetch regions: %w", err)
-	}
-	defer resp.Body.Close()
+	// Create channels for results and errors
+	resultChan := make(chan []Region)
+	errChan := make(chan error)
 
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("API returned status %d", resp.StatusCode)
-	}
+	// Launch goroutine to handle the HTTP request
+	go func() {
+		resp, err := http.Get(*apiURL)
+		if err != nil {
+			errChan <- fmt.Errorf("failed to fetch regions: %w", err)
+			return
+		}
+		defer resp.Body.Close()
 
-	var apiResponse APIResponse
-	if err := json.NewDecoder(resp.Body).Decode(&apiResponse); err != nil {
-		return nil, fmt.Errorf("failed to decode JSON: %w", err)
-	}
+		if resp.StatusCode != http.StatusOK {
+			errChan <- fmt.Errorf("API returned status %d", resp.StatusCode)
+			return
+		}
 
-	return apiResponse.Data, nil
+		var apiResponse APIResponse
+		if err := json.NewDecoder(resp.Body).Decode(&apiResponse); err != nil {
+			errChan <- fmt.Errorf("failed to decode JSON: %w", err)
+			return
+		}
+
+		resultChan <- apiResponse.Data
+	}()
+
+	// Use select with timeout to prevent hanging
+	select {
+	case regions := <-resultChan:
+		return regions, nil
+	case err := <-errChan:
+		return nil, err
+	case <-time.After(30 * time.Second):
+		return nil, fmt.Errorf("request timed out after 30 seconds")
+	}
 }
 
 func filterRegions(regions []Region, status string) []Region {
